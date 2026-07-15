@@ -1,0 +1,535 @@
+/* ============================================================================
+   Bruno Bento . Portfolio
+   Conceito: "A junta" (the seam). Herdado do banner aprovado (banner-light.svg
+   e banner-dark_preview.png). Toda cor, escala e ritmo abaixo foi extraido de
+   la: os valores @1200px sao literalmente os do banner, que tem 1200x400.
+   HTML + CSS + JS puro. Zero build, zero framework.
+
+   Sumario
+     1. Tokens
+     2. Reset e base
+     3. Utilitarios
+     4. Hero: a chapa
+     5. Lado humano (sans)
+     6. A junta: costura e solda
+     7. Lado maquina (mono)
+     8. Movimento
+     9. Reduced motion
+   ========================================================================== */
+
+
+/* ── 1. Tokens ─────────────────────────────────────────────────────────────
+   Paleta: aco + uma faisca. Um unico acento ambar, com extrema parcimonia:
+   no hero ele aparece no arco da solda, na seta do CTA e no foco. Nada mais. */
+
+:root {
+  color-scheme: light dark;
+
+  /* --- superficies (banner-light.svg) --- */
+  --surface-human:   #fbfcfd;  /* rect esquerdo: o lado humano, luz batendo */
+  --surface-machine: #e9edf1;  /* rect direito: rebaixado, o lado maquina   */
+  --seam:            #cfd7de;  /* a costura: sulco, mais escuro que os dois */
+  --rule:            #cfd7de;  /* fios da ficha tecnica                     */
+
+  /* --- tinta --- */
+  --ink-strong: #0e1418;  /* nome                       */
+  --ink:        #212a32;  /* titulo, itens da stack     */
+  --ink-muted:  #59646f;  /* tagline, metadados, links  */
+
+  /* --- acao --- */
+  --cta-bg: #141a1f;
+  --cta-fg: #f4f7f9;
+  --accent: #ff8f45;      /* a faisca: seta do CTA sobre a pastilha escura   */
+  --focus:  #a8490a;      /* mesma familia, escurecida p/ 3:1 sobre o claro  */
+
+  /* --- o arco da solda (radialGradient #arc do banner) --- */
+  --arc-core: #ffc880;
+  --arc-mid:  rgba(244, 120, 15, .95);
+  --arc-halo: rgba(210, 84, 10, .32);
+  --arc-edge: rgba(210, 84, 10, 0);
+
+  /* --- luz caindo do canto superior esquerdo (radialGradient #sheen) --- */
+  --sheen: radial-gradient(95% 95% at 14% 0%,
+             rgba(222, 230, 237, 0)    0%,
+             rgba(222, 230, 237, .09) 55%,
+             rgba(222, 230, 237, .22) 100%);
+
+  /* --- sombra do rebaixo, logo depois da costura (linearGradient #seamShadow) --- */
+  --recess-1: rgba(28, 40, 49, .10);
+  --recess-2: rgba(28, 40, 49, 0);
+
+  /* --- tipografia ---
+     Fallback = as stacks exatas do banner. Se o webfont falhar, o site cai
+     exatamente na renderizacao do banner. */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Liberation Mono', monospace;
+
+  /* Escala: o termo do meio de cada clamp e o vw que reproduz o banner em
+     1200px de viewport (58px = 4.833vw, 27px = 2.25vw, 18px = 1.5vw...).
+     Em 1200px o site e o banner tem a mesma tipografia, glifo por glifo. */
+  --fs-display: clamp(2.375rem,   4.833vw, 5.5rem);    /* 58    @1200 */
+  --fs-h2:      clamp(1.5rem,     2.917vw, 2.5rem);    /* 35    @1200 (proximas secoes) */
+  --fs-h3:      clamp(1.125rem,   2.25vw,  2.125rem);  /* 27    @1200 */
+  --fs-body:    clamp(.9375rem,   1.5vw,   1.25rem);   /* 18    @1200 */
+  --fs-mono-lg: clamp(1rem,       1.667vw, 1.375rem);  /* 20    @1200 */
+  --fs-mono-sm: clamp(.8125rem,   1.375vw, 1.0625rem); /* 16.5  @1200 */
+
+  /* Ritmo: idem, medido no banner (padding 64, texto a 40 da costura...) */
+  --pad-x:    clamp(1.25rem,  5.333vw, 8rem);     /* 64 @1200 */
+  --pad-seam: clamp(1.25rem,  3.333vw, 5rem);     /* 40 @1200 */
+  --pad-y:    clamp(2rem,     6vw,     4.5rem);   /* 72 @1200 */
+  --recess-w: clamp(1.75rem,  4.667vw, 4.5rem);   /* 56 @1200 */
+  --sheet-max: clamp(17.5rem, 30vw,    26.25rem); /* 360 @1200 */
+
+  /* Raio: a pastilha e pill (rx = h/2, como no banner). O raio da chapa fica
+     registrado para as superficies das proximas secoes. */
+  --r-pill:  999px;
+  --r-plate: 22px;
+
+  /* Movimento. A curva e a mesma do banner (keySplines .23 1 .32 1), que por
+     acaso e o strong ease-out do Emil Kowalski. */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --t-fast:   160ms;
+  --t-reveal: 500ms;
+
+  /* Dimensao do arco: fixa. E uma tocha, uma ferramenta fisica; nao cresce
+     com a janela. 36x96 = o ellipse rx18 ry48 do banner, 1:1.
+     Mobile-first: com a junta deitada, o arco deita junto. Mora no :root
+     porque a tocha e o arco precisam ler os dois o mesmo valor. */
+  --arc-w: 96px;
+  --arc-h: 36px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --arc-w: 36px;
+    --arc-h: 96px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Amostrados pixel a pixel de banner-dark_preview.png (o .svg dark nao
+       existe mais no repo; o PNG e a unica fonte da versao escura). */
+    --surface-human:   #171c22;
+    --surface-machine: #0e1217;
+    --seam:            #29313b;  /* no escuro a costura e o cordao de solda
+                                    pegando luz: mais clara que as duas faces */
+    --rule:            #20262f;
+
+    --ink-strong: #f1f5f8;
+    --ink:        #d5dde5;
+    --ink-muted:  #93a0ac;
+
+    --cta-bg: #e9eef2;
+    --cta-fg: #141a1f;
+    --accent: #a8490a;   /* a pastilha inverte, a faisca escurece p/ contraste */
+    --focus:  #ff8f45;
+
+    --sheen: radial-gradient(95% 95% at 14% 0%,
+               rgba(199, 215, 231, .07)  0%,
+               rgba(199, 215, 231, .028) 55%,
+               rgba(199, 215, 231, 0)    100%);
+
+    --recess-1: rgba(0, 0, 0, .30);
+    --recess-2: rgba(0, 0, 0, 0);
+  }
+}
+
+
+/* ── 2. Reset e base ──────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  background: var(--surface-human);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+
+a { color: inherit; }
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+
+/* ── 3. Utilitarios ───────────────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Base das proximas secoes. Hoje os alvos das ancoras nao tem altura: a
+   pagina e so o hero. A folga de rolagem ja fica certa para quando tiverem. */
+.section { scroll-margin-top: var(--pad-y); }
+
+
+/* ── 4. Hero: a chapa ─────────────────────────────────────────────────────── */
+
+.hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+
+  /* Mobile: a junta esta deitada. Mesmos 63/37, girados 90 graus.
+     minmax(min-content, Xfr) mantem a proporcao mas nunca corta o conteudo. */
+  grid-template-rows: minmax(min-content, 63.33fr) minmax(min-content, 36.67fr);
+}
+
+@media (min-width: 900px) {
+  .hero {
+    grid-template-rows: none;
+    /* minmax(0, Xfr) trava a razao exata: e onde a costura tem que cair. */
+    grid-template-columns: minmax(0, 63.33fr) minmax(0, 36.67fr);
+  }
+}
+
+
+/* ── 5. Lado humano (sans) ────────────────────────────────────────────────── */
+
+.human {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--pad-y) var(--pad-x);
+  background-color: var(--surface-human);
+  background-image: var(--sheen);
+}
+
+@media (min-width: 900px) {
+  .human { padding-right: var(--pad-seam); }
+}
+
+.human__name {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -.024em;   /* -1.4px sobre 58px, do banner */
+  color: var(--ink-strong);
+  text-wrap: balance;
+}
+
+.human__role {
+  margin-top: clamp(.25rem, .5vw, .5rem);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.007em;   /* -0.2px sobre 27px */
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.human__tagline {
+  margin-top: clamp(.75rem, 1.667vw, 1.5rem);
+  max-width: 32em;           /* ~560px @18px: a mesma medida de linha do banner */
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.5;          /* 27/18, do banner */
+  color: var(--ink-muted);
+  text-wrap: pretty;
+}
+
+.human__act { margin-top: clamp(1.375rem, 2.917vw, 2.5rem); }
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  min-height: clamp(2.75rem, 4.333vw, 3.5rem);   /* 52 @1200 */
+  padding-inline: clamp(1.125rem, 2.167vw, 1.75rem);
+  border-radius: var(--r-pill);
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  font-size: clamp(.9375rem, 1.5vw, 1.125rem);
+  font-weight: 600;
+  letter-spacing: -.006em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+/* A seta e a faisca. No banner ela aponta pra direita, levando ao site;
+   aqui ela aponta pra baixo, levando pra dentro da pagina. */
+.cta__arrow {
+  color: var(--accent);
+  transition: transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover { transform: translateY(-1px); }
+  .cta:hover .cta__arrow { transform: translateY(2px); }
+}
+
+.cta:active { transform: translateY(0) scale(.98); }
+
+
+/* ── 6. A junta: costura e solda ──────────────────────────────────────────── */
+
+/* A costura mora dentro do painel maquina, colada na borda de ataque dele.
+   Assim ela cai exatamente no limite dos dois mundos em qualquer largura,
+   sem depender de calcular porcentagem. */
+
+.seam {
+  position: absolute;
+  background: var(--seam);
+  /* mobile: deitada, no topo do painel */
+  top: 0; left: 0; right: 0;
+  height: 1.5px;
+  transform-origin: left;
+}
+
+/* A tocha: uma janela do tamanho exato da costura. E ela que recorta o arco,
+   fazendo o papel do clipPath #plate do banner, e impede que o arco crie
+   overflow na pagina no fim do trajeto. */
+.torch {
+  position: absolute;
+  overflow: clip;
+  pointer-events: none;
+  left: 0; right: 0;
+  top: calc(.75px - (var(--arc-h) / 2));
+  height: var(--arc-h);
+}
+
+.arc {
+  position: absolute;
+  top: 0;
+  left: calc(var(--arc-w) / -2);
+  width: var(--arc-w);
+  height: var(--arc-h);
+  opacity: 0;                /* estado base = depois da solda: o arco sumiu */
+  background: radial-gradient(ellipse closest-side,
+    var(--arc-core) 0%,
+    var(--arc-mid) 16%,
+    var(--arc-halo) 50%,
+    var(--arc-edge) 100%);
+}
+
+@media (min-width: 900px) {
+  .seam {
+    top: 0; bottom: 0; right: auto;
+    width: 1.5px; height: auto;
+    transform-origin: top;
+  }
+
+  .torch {
+    top: 0; bottom: 0; right: auto;
+    height: auto;
+    left: calc(.75px - (var(--arc-w) / 2));
+    width: var(--arc-w);
+  }
+
+  .arc {
+    left: 0;
+    top: calc(var(--arc-h) / -2);
+  }
+}
+
+
+/* ── 7. Lado maquina (mono) ───────────────────────────────────────────────── */
+
+.machine {
+  position: relative;        /* ancora da costura e da tocha */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.25rem, 6vw, 4.5rem) var(--pad-x);
+  background-color: var(--surface-machine);
+  background-image: linear-gradient(180deg, var(--recess-1), var(--recess-2) var(--recess-w));
+  font-family: var(--font-mono);
+}
+
+@media (min-width: 900px) {
+  .machine {
+    padding: var(--pad-y) var(--pad-seam);
+    background-image: linear-gradient(90deg, var(--recess-1), var(--recess-2) var(--recess-w));
+  }
+}
+
+.sheet { width: 100%; }
+
+@media (min-width: 900px) {
+  .sheet { max-width: var(--sheet-max); }
+}
+
+.sheet__lead {
+  font-size: var(--fs-mono-sm);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+
+/* Os dois fios agrupam a stack. Sao dois no total, nao um por linha. */
+.sheet__stack {
+  margin-top: clamp(.75rem, 1.833vw, 1.375rem);   /* 22 @1200: baseline ao fio */
+  padding-top: clamp(1rem, 2.333vw, 1.75rem);     /* 28 @1200: fio ao React    */
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-mono-lg);
+  font-weight: 500;
+  line-height: 1.2;      /* travado: e ele que fecha o passo de 38px do banner */
+  color: var(--ink);
+
+  /* mobile: a lista deita, como todo o resto do painel */
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem clamp(1.25rem, 6vw, 2.25rem);
+}
+
+@media (min-width: 900px) {
+  .sheet__stack {
+    display: grid;
+    /* 24px de linha (20 x 1.2) + 14 de gap = o passo de 38px do banner */
+    gap: clamp(.5rem, 1.167vw, 1rem);
+  }
+}
+
+.sheet__meta {
+  margin-top: clamp(.875rem, 2.333vw, 1.75rem);
+  padding-top: clamp(.875rem, 2.333vw, 1.75rem);
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-mono-sm);
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.sheet__loc { line-height: 1.45; }
+
+.sheet__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem clamp(1.125rem, 2.5vw, 1.875rem);
+  margin-top: clamp(.5rem, 1.167vw, .875rem);
+}
+
+.sheet__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color var(--t-fast) ease;
+}
+
+.sheet__links svg { flex: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .sheet__links a:hover {
+    color: var(--ink-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+
+/* ── 8. Movimento ─────────────────────────────────────────────────────────────
+   Uma ousadia so: a solda. Uma vez, ~1,5s, e congela. Sem loop.
+   Os tempos abaixo sao os do banner convertidos de keyTimes para ms, para o
+   site e o banner abrirem no mesmo compasso.
+   Regra do estado base: tudo ja esta no estado FINAL no CSS. As animacoes so
+   fornecem o estado inicial (keyframe `from`). Se elas nao rodarem, por
+   reduced-motion ou por qualquer outro motivo, o hero aparece completo. */
+
+.reveal {
+  animation: reveal var(--t-reveal) var(--ease-out) var(--delay, 0ms) both;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+}
+
+/* O lado humano entra primeiro. */
+.human__name    { --delay: 300ms; }
+.human__role    { --delay: 380ms; }
+.human__tagline { --delay: 460ms; }
+.human__act     { --delay: 580ms; }
+
+/* O lado maquina acende depois, atras do arco que esta descendo: a solda
+   passa e energiza a ficha. */
+.sheet__lead                { --delay: 720ms; }
+.sheet__stack li:nth-child(1) { --delay: 780ms; }
+.sheet__stack li:nth-child(2) { --delay: 830ms; }
+.sheet__stack li:nth-child(3) { --delay: 880ms; }
+.sheet__meta                { --delay: 1020ms; }
+
+/* A costura desenha de cima para baixo. Linear de proposito: uma tocha de
+   solda anda com avanco constante, nao desacelera no fim. */
+.seam { animation: seam-draw-x 954ms linear 243ms both; }
+
+@keyframes seam-draw-x { from { transform: scaleX(0); } }
+@keyframes seam-draw-y { from { transform: scaleY(0); } }
+
+/* O arco viaja junto com a ponta da costura. Duas animacoes, porque o trajeto
+   e o brilho tem tempos diferentes no banner, e cada uma toca uma propriedade
+   diferente (transform / opacity), entao nao brigam. */
+.arc {
+  animation:
+    weld-travel-x 1190ms linear 150ms both,
+    weld-glow     1500ms linear    0ms both;
+}
+
+@keyframes weld-travel-x {
+  from { transform: translate3d(-60px, 0, 0); }
+  to   { transform: translate3d(calc(100vw + 60px), 0, 0); }
+}
+
+@keyframes weld-travel-y {
+  from { transform: translate3d(0, -60px, 0); }
+  to   { transform: translate3d(0, calc(100dvh + 60px), 0); }
+}
+
+@keyframes weld-glow {
+  0%   { opacity: 0; }
+  14%  { opacity: 0; }
+  26%  { opacity: 1; }
+  78%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (min-width: 900px) {
+  .seam { animation-name: seam-draw-y; }
+  .arc  { animation-name: weld-travel-y, weld-glow; }
+}
+
+/* Enquanto a fonte nao chegou, a peca fica parada no primeiro quadro.
+   Ver o script inline no <head>. */
+.type-pending .reveal,
+.type-pending .seam,
+.type-pending .arc { animation-play-state: paused; }
+
+
+/* ── 9. Reduced motion ────────────────────────────────────────────────────────
+   Aqui e CSS, entao da pra desligar de verdade, diferente do SMIL do banner.
+   Cirurgico: cai todo o deslocamento e a solda, ficam as transicoes de cor. */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .seam,
+  .arc { animation: none; }
+
+  .torch { display: none; }
+
+  .cta { transition: none; }
+  .cta:hover,
+  .cta:active { transform: none; }
+  .cta:hover .cta__arrow { transform: none; }
+}
