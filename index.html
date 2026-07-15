@@ -115,13 +115,262 @@
   </section>
 
   <!--
-    Proximas secoes (proxima iteracao): Sobre, Stack por niveis, Casos, Contato.
-    Os alvos existem hoje so para a ancora do hero resolver. Sem conteudo e sem
-    altura: a pagina, por enquanto, e exatamente o hero.
+    Sobre e Stack ainda sao alvos vazios, so para as ancoras resolverem.
   -->
   <section class="section" id="sobre"></section>
   <section class="section" id="stack"></section>
-  <section class="section" id="casos"></section>
+
+  <!-- ===================================================================
+       CASOS . a mesma peca do hero, continuada
+       A costura segue caindo em 63,33%. Esquerda = humano/sans: a prosa e o
+       produto. Direita = maquina/mono: a ficha, terse, so dado.
+       Todo bloco aqui dentro usa a MESMA grade (.split), entao a junta
+       atravessa a secao inteira sem emenda, e vai atravessar os proximos
+       casos tambem. Abaixo de 900px a junta deita, como no hero.
+
+       Arquitetura para os proximos casos: duplicar <article class="caso">.
+       O rebaixo, a costura e o alinhamento sao da secao, nao do caso.
+       =================================================================== -->
+  <section class="section casos" id="casos" aria-labelledby="casos-titulo">
+
+    <div class="split">
+      <div class="split__human casos__head">
+        <h2 class="casos__title" id="casos-titulo">Casos</h2>
+        <p class="casos__lead">O que doía, o que eu construí e como funciona por dentro.</p>
+      </div>
+    </div>
+
+    <article class="caso" id="caso-plataforma" aria-labelledby="caso-plataforma-titulo">
+
+      <div class="split">
+
+        <div class="split__human caso__human">
+          <h3 class="caso__title" id="caso-plataforma-titulo">Uma plataforma, 23 ofícios</h3>
+          <p class="caso__lead">Produto próprio, no ar, operado por mim. O que muda de um ofício para o outro é dado, não código.</p>
+
+          <h4 class="caso__label">O problema</h4>
+          <p class="caso__p">Quem toca um negócio pequeno faz a gestão em caderno, planilha e conversa de mensagem. O que existe pronto cobra por usuário, prende em fidelidade e chega com um catálogo de módulos que essa pessoa nunca vai abrir. E quase nada fala a língua do ofício dela: o mesmo campo que a clínica chama de paciente, a veterinária chama de animal e a academia chama de aluno. Escrever um sistema para cada ofício resolveria a língua e seria impossível de manter sozinho.</p>
+
+          <h4 class="caso__label">O que construí</h4>
+          <p class="caso__p">Um backend em Node com Express sobre um PostgreSQL, e uma interface React por frente de negócio: clínica, veterinária, beleza, academia, autônomos, mais um painel interno de administração. As seis conversam com a mesma API e leem as mesmas tabelas.</p>
+          <p class="caso__p">O vocabulário do ofício não está no código. Está em duas colunas JSONB do segmento: uma diz como chamar cada coisa, a outra diz quais abas do prontuário existem. Abrir um ofício novo é inserir uma linha, não abrir uma branch.</p>
+
+          <h4 class="caso__label">Como funciona</h4>
+          <p class="caso__p">A agenda é a tela mais usada do sistema, e ela é a mesma nos três segmentos abaixo. Troque e veja o que muda.</p>
+
+          <!-- O especime. A chapa tem uma janela, e atras dela uma tela acesa.
+               O controle e da chapa (linguagem do portfolio: aco, sans, pastilha).
+               O que esta dentro da moldura e do produto: cor, escala e raios sao
+               os tokens dele, nao os meus. Ver o bloco 12 do styles.css. -->
+          <figure class="spec">
+
+            <div class="spec__ctrl">
+              <p class="spec__ctrl-label" id="spec-seg-label">O mesmo sistema, no segmento:</p>
+              <div class="spec__segs" role="group" aria-labelledby="spec-seg-label">
+                <button type="button" class="spec__seg is-active" aria-pressed="true" data-seg="medicina">Medicina</button>
+                <button type="button" class="spec__seg" aria-pressed="false" data-seg="veterinaria">Veterinária</button>
+                <button type="button" class="spec__seg" aria-pressed="false" data-seg="academia">Academia</button>
+              </div>
+            </div>
+
+            <p class="sr-only">A tela recriada mostra a agenda semanal do sistema: uma barra lateral de navegação, quatro indicadores do dia, os controles de período e uma grade de segunda a sexta com os atendimentos posicionados por horário e coloridos por situação.</p>
+
+            <div class="spec__screen" aria-hidden="true">
+
+              <div class="spec__rail">
+                <span class="spec__mark"></span>
+                <ul class="spec__nav">
+                  <li>Dashboard</li>
+                  <li class="is-active">Agenda</li>
+                  <li data-term="pacientes">Pacientes</li>
+                  <li>Financeiro</li>
+                  <li>Informações</li>
+                </ul>
+              </div>
+
+              <div class="spec__main">
+
+                <div class="spec__head">
+                  <p class="spec__h">Agenda</p>
+                  <span class="spec__btn">+ Novo Agendamento</span>
+                </div>
+
+                <div class="spec__kpis">
+                  <div class="spec__kpi">
+                    <span class="spec__kpi-icon" data-tone="azul">
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M5.5 1.8v3M10.5 1.8v3M2.5 6.8h11"/></svg>
+                    </span>
+                    <span class="spec__kpi-txt"><b>9</b><i>Hoje</i></span>
+                  </div>
+                  <div class="spec__kpi">
+                    <span class="spec__kpi-icon" data-tone="verde">
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3.2 8.4 6.2 11.4 12.8 4.6"/></svg>
+                    </span>
+                    <span class="spec__kpi-txt"><b>34</b><i>Ativos</i></span>
+                  </div>
+                  <div class="spec__kpi">
+                    <span class="spec__kpi-icon" data-tone="cinza">
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M1.4 8.4 4 11 9.6 5"/><path d="M6.4 8.4 9 11 14.6 5"/></svg>
+                    </span>
+                    <span class="spec__kpi-txt"><b>112</b><i>Finalizados</i></span>
+                  </div>
+                  <div class="spec__kpi">
+                    <span class="spec__kpi-icon" data-tone="vermelho">
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4.6 4.6 11.4 11.4M11.4 4.6 4.6 11.4"/></svg>
+                    </span>
+                    <span class="spec__kpi-txt"><b>6</b><i>Cancelados/Faltas</i></span>
+                  </div>
+                </div>
+
+                <div class="spec__bar">
+                  <span class="spec__pill spec__pill--icon">‹</span>
+                  <span class="spec__pill">Hoje</span>
+                  <span class="spec__pill spec__pill--icon">›</span>
+                  <p class="spec__range">14 a 18 de julho</p>
+                  <span class="spec__views">
+                    <span class="spec__pill">Mês</span>
+                    <span class="spec__pill is-active">Semana</span>
+                    <span class="spec__pill">Dia</span>
+                    <span class="spec__pill">Lista</span>
+                  </span>
+                </div>
+
+                <!-- A grade. --i = horas desde as 08:00, --d = duracao em horas.
+                     A coluna 3 e hoje: e onde mora o indicador de agora. -->
+                <div class="spec__cal">
+                  <span class="spec__corner"></span>
+                  <span class="spec__dh" data-d="1">Seg <b>14</b></span>
+                  <span class="spec__dh" data-d="2">Ter <b>15</b></span>
+                  <span class="spec__dh is-today" data-d="3">Qua <b>16</b></span>
+                  <span class="spec__dh" data-d="4">Qui <b>17</b></span>
+                  <span class="spec__dh" data-d="5">Sex <b>18</b></span>
+
+                  <div class="spec__times">
+                    <span>08:00</span><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span>
+                    <span>13:00</span><span>14:00</span><span>15:00</span><span>16:00</span><span>17:00</span>
+                  </div>
+
+                  <div class="spec__day" data-d="1">
+                    <span class="spec__ev" data-s="finalizado" style="--i:.5;--d:.75"><b>08:30</b><span data-nome>Marina Sotto</span></span>
+                    <span class="spec__ev" data-s="finalizado" style="--i:2;--d:1"><b>10:00</b><span data-nome>Elias Prado</span></span>
+                    <span class="spec__ev" data-s="finalizado" style="--i:6;--d:.75"><b>14:00</b><span data-nome>Renata Cabral</span></span>
+                  </div>
+
+                  <div class="spec__day" data-d="2">
+                    <span class="spec__ev" data-s="confirmado" style="--i:1;--d:.75"><b>09:00</b><span data-nome>Tomás Vieira</span></span>
+                    <span class="spec__ev" data-s="faltou" style="--i:3;--d:.5"><b>11:00</b><span data-nome>Iara Nunes</span></span>
+                    <span class="spec__ev" data-s="confirmado" style="--i:7.5;--d:1"><b>15:30</b><span data-nome>Otávio Rissi</span></span>
+                  </div>
+
+                  <div class="spec__day is-today" data-d="3">
+                    <span class="spec__ev" data-s="finalizado" style="--i:1;--d:1"><b>09:00</b><span data-nome>Bianca Sarmento</span></span>
+                    <span class="spec__ev" data-s="em_atendimento" style="--i:2.5;--d:.75"><b>10:30</b><span data-nome>Caio Lustosa</span></span>
+                    <span class="spec__ev" data-s="agendado" style="--i:6;--d:.75"><b>14:00</b><span data-nome>Dora Aiub</span></span>
+                    <span class="spec__ev" data-s="agendado" style="--i:8;--d:.5"><b>16:00</b><span data-nome>Nelson Fraga</span></span>
+                    <span class="spec__now" style="--i:3.083"></span>
+                  </div>
+
+                  <div class="spec__day" data-d="4">
+                    <span class="spec__ev" data-s="confirmado" style="--i:0;--d:.5"><b>08:00</b><span data-nome>Vera Mancuso</span></span>
+                    <span class="spec__ev" data-s="agendado" style="--i:3;--d:1"><b>11:00</b><span data-nome>Rui Delfino</span></span>
+                    <span class="spec__ev" data-s="agendado" style="--i:7;--d:.75"><b>15:00</b><span data-nome>Lia Bastos</span></span>
+                  </div>
+
+                  <div class="spec__day" data-d="5">
+                    <span class="spec__ev" data-s="agendado" style="--i:1.5;--d:.75"><b>09:30</b><span data-nome>Ícaro Quintela</span></span>
+                    <span class="spec__ev" data-s="agendado" style="--i:5;--d:1"><b>13:00</b><span data-nome>Sônia Vaz</span></span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <figcaption class="spec__cap">
+              <p>A mesma tela, a mesma API, as mesmas tabelas. O que muda é uma linha do segmento no banco:</p>
+              <p class="spec__termos"><code>config_termos</code> <b data-json aria-live="polite">{ "paciente": "Paciente", "profissional": "Médico(a)" }</b></p>
+            </figcaption>
+
+          </figure>
+        </div>
+
+        <aside class="split__machine caso__machine">
+          <div class="ficha">
+            <p class="ficha__lead">Projeto próprio, em produção</p>
+
+            <ul class="ficha__stack">
+              <li>React 19 · Vite</li>
+              <li>Node · Express</li>
+              <li>PostgreSQL</li>
+              <li>Docker · Nginx</li>
+              <li>VPS Linux</li>
+            </ul>
+
+            <dl class="ficha__facts">
+              <div class="ficha__fact"><dt>Interfaces</dt><dd>6</dd></div>
+              <div class="ficha__fact"><dt>Ofícios</dt><dd>23</dd></div>
+              <div class="ficha__fact"><dt>Backend</dt><dd>1</dd></div>
+              <div class="ficha__fact"><dt>Banco</dt><dd>1</dd></div>
+            </dl>
+          </div>
+        </aside>
+
+      </div>
+
+      <div class="split">
+        <div class="split__human">
+          <h4 class="caso__label">As decisões</h4>
+        </div>
+      </div>
+
+      <div class="split dec">
+        <div class="split__human dec__human">
+          <h5 class="dec__title">O isolamento entre empresas mora no banco</h5>
+          <p class="caso__p">Cada empresa enxerga só o que é dela. Deixar isso por conta de eu lembrar da cláusula certa em toda consulta é frágil, então a regra desceu um nível. Toda tabela com dado de empresa tem Row-Level Security ligada e uma política de isolamento. A empresa vem do token, é plantada na conexão dentro da transação e morre no commit, para não sobrar para a próxima requisição que pegar aquela conexão emprestada do pool. A cláusula manual continua em toda consulta: são duas camadas, não uma troca.</p>
+        </div>
+        <div class="split__machine dec__machine">
+          <dl class="ficha__facts">
+            <div class="ficha__fact"><dt>política</dt><dd>por tabela</dd></div>
+            <div class="ficha__fact"><dt>contexto</dt><dd>vem do token</dd></div>
+            <div class="ficha__fact"><dt>escopo</dt><dd>a transação</dd></div>
+            <div class="ficha__fact"><dt>validade</dt><dd>até o commit</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="split dec">
+        <div class="split__human dec__human">
+          <h5 class="dec__title">As camadas, e a mais barata primeiro</h5>
+          <p class="caso__p">Quem recusa uma requisição indevida é o Nginx, antes de ela chegar no Node: dizer não na borda custa uma fração de acordar a aplicação para dizer a mesma coisa. Passando dali, a requisição atravessa autenticação, contexto da empresa, situação do contrato e a checagem de qual interface pediu, porque token de uma frente não vale na outra. O acesso é um token curto; a renovação é um cookie httpOnly rotativo, e se um cookie antigo reaparece, a família inteira é revogada.</p>
+        </div>
+        <div class="split__machine dec__machine">
+          <dl class="ficha__facts">
+            <div class="ficha__fact"><dt>limite de taxa</dt><dd>no Nginx</dd></div>
+            <div class="ficha__fact"><dt>acesso</dt><dd>token curto</dd></div>
+            <div class="ficha__fact"><dt>renovação</dt><dd>rotativa</dd></div>
+            <div class="ficha__fact"><dt>segundo fator</dt><dd>por usuário</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="split dec">
+        <div class="split__human dec__human">
+          <h5 class="dec__title">Uma imagem, seis interfaces</h5>
+          <p class="caso__p">O build é multi-estágio: cada interface é construída no seu próprio estágio e o resultado vai para uma única imagem de Nginx, com a landing junto. O roteamento é por caminho, não por subdomínio, então não existe certificado nem DNS para manter por segmento. Arquivo com hash no nome fica um ano em cache; o HTML, nunca. O healthcheck reinicia o processo sozinho, porque processo vivo e travado é pior do que processo morto.</p>
+        </div>
+        <div class="split__machine dec__machine">
+          <dl class="ficha__facts">
+            <div class="ficha__fact"><dt>build</dt><dd>multi-estágio</dd></div>
+            <div class="ficha__fact"><dt>roteamento</dt><dd>por caminho</dd></div>
+            <div class="ficha__fact"><dt>assets</dt><dd>cache de 1 ano</dd></div>
+            <div class="ficha__fact"><dt>HTML</dt><dd>sempre revalidado</dd></div>
+          </dl>
+        </div>
+      </div>
+
+    </article>
+
+  </section>
+
   <section class="section" id="contato"></section>
 
 </main>
