@@ -95,6 +95,9 @@
      760 - 64 - 40 = 656); o teto existe para 1600px+ nao esticar a linha. */
   --case-max: 48rem;   /* 768 */
 
+  /* altura do card no baralho; e tambem o trajeto vertical da solda */
+  --carta-h: min(82vh, 58rem);
+
   /* Raio: a pastilha e pill (rx = h/2, como no banner). O raio da chapa fica
      registrado para as superficies das proximas secoes. */
   --r-pill:  999px;
@@ -204,19 +207,19 @@ a { color: inherit; }
 /* ── 4. Hero: a chapa ─────────────────────────────────────────────────────── */
 
 .hero {
-  min-height: 100vh;
-  min-height: 100dvh;
   display: grid;
-
-  /* Mobile: a junta esta deitada. Mesmos 63/37, girados 90 graus.
-     minmax(min-content, Xfr) mantem a proporcao mas nunca corta o conteudo. */
+  /* Mobile: a junta esta deitada. Mesmos 63/37, girados 90 graus. */
   grid-template-rows: minmax(min-content, 63.33fr) minmax(min-content, 36.67fr);
+
+  /* agora e um card na grade */
+  border: 1px solid var(--rule);
+  border-radius: var(--r-plate);
+  overflow: clip;
 }
 
 @media (min-width: 900px) {
   .hero {
     grid-template-rows: none;
-    /* minmax(0, Xfr) trava a razao exata: e onde a costura tem que cair. */
     grid-template-columns: minmax(0, 63.33fr) minmax(0, 36.67fr);
   }
 }
@@ -510,7 +513,7 @@ a { color: inherit; }
 
 @keyframes weld-travel-y {
   from { transform: translate3d(0, -60px, 0); }
-  to   { transform: translate3d(0, calc(100dvh + 60px), 0); }
+  to   { transform: translate3d(0, calc(var(--carta-h) + 60px), 0); }
 }
 
 @keyframes weld-glow {
@@ -551,319 +554,80 @@ a { color: inherit; }
 }
 
 
-/* ── 10. Casos: a vitrine ─────────────────────────────────────────────────────
-   A junta continua, mas aqui ela nao e o assunto: e a estante. A costura desce
-   na mesma coluna do hero (--seam-x) e o painel maquina continua atras dela.
-   Como as duas secoes sao full-bleed e vizinhas, a linha nao tem emenda: o
-   painel do hero acaba e este comeca no mesmo x, com o mesmo rebaixo.
+/* ── 10. Baralho no scroll: passar de card em card ────────────────────────────
+   Rolar pra baixo "puxa" o card da frente pra cima e revela o proximo
+   (1 -> 2 -> 3); rolar pra cima desfaz (3 -> 2 -> 1). O baralho fica preso na
+   tela (sticky) e o scroll conduz a animacao (JS so escreve transform/opacity).
+   Fallback sem JS ou com movimento reduzido: os cards viram uma coluna. */
 
-   A divisao de trabalho tambem e a do hero:
-     esquerda (humano, sans) = a peca. O que e, o que ela faz, e a porta.
-     direita  (maquina, mono) = so dado. A ficha da peca, nada mais.
+/* --- fallback: coluna simples --- */
+.baralho { display: contents; }
 
-   Um caso e um <li>. A costura e o painel sao pintados pela secao inteira, e
-   nao por caso, entao os proximos so empilham na lista: a linha continua
-   sozinha e nada aqui precisa ser redesenhado.
-
-   Movimento: nenhum na entrada. O hero ja teve a solda; uma vitrine e uma
-   bancada, nao um espetaculo. O que se move e o que o dedo toca: a plaqueta
-   afunda, a seta anda. O reduced motion desta secao mora no fim do bloco,
-   junto do que ele desliga (o bloco 9 e do hero). */
-
-.casos {
-  position: relative;
-  padding-block: var(--pad-section);
+.palco {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
 }
 
-/* O painel e a costura sao da secao inteira. Os dois sao pseudos posicionados
-   e o conteudo vem depois no DOM: o empilhamento se resolve pela ordem, sem
-   nenhum z-index. */
-@media (min-width: 900px) {
-  .casos::before,
-  .casos::after {
-    content: "";
-    position: absolute;
+.carta > * { height: var(--carta-h); }
+
+/* o scroll segue o mouse: sobre a demo, rola o site interno dela; fora (margens,
+   barra do card, ou o card de apresentacao) rola o portfolio (o baralho). Por
+   isso a demo fica interativa (pointer-events no padrao), sem override aqui. */
+
+/* --- modo scroll-scrub (com JS e movimento normal) --- */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .rolo { position: relative; }   /* a altura vem do JS: N x 100vh */
+
+  html.js .palco {
+    position: sticky;
     top: 0;
-    bottom: 0;
-    pointer-events: none;
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    max-width: none;
+    margin: 0;
+    gap: 0;
+    padding: clamp(1rem, 3vw, 2rem);
   }
 
-  /* o rebaixo: mesmo gradiente do .machine, entao a sombra da costura
-     atravessa a fronteira das duas secoes sem degrau */
-  .casos::before {
-    left: var(--seam-x);
-    right: 0;
-    background-color: var(--surface-machine);
-    background-image: linear-gradient(90deg, var(--recess-1), var(--recess-2) var(--recess-w));
+  html.js .baralho {
+    display: block;
+    position: relative;
+    width: min(72rem, 100%);
+    height: var(--carta-h);
   }
 
-  /* a costura, na coluna exata do hero */
-  .casos::after {
-    left: var(--seam-x);
-    width: 1.5px;
-    background: var(--seam);
-  }
-}
-
-.casos__intro,
-.caso { position: relative; }
-
-
-/* --- cabecalho ------------------------------------------------------------ */
-
-.casos__intro {
-  padding-inline: var(--pad-x);
-  margin-bottom: clamp(2rem, 5vw, 3.75rem);
-}
-
-@media (min-width: 900px) {
-  /* --seam-x como largura: o cabecalho acaba exatamente na costura, sem
-     precisar de uma segunda grade so para segurar duas linhas de texto. */
-  .casos__intro {
-    width: var(--seam-x);
-    padding-right: var(--pad-seam);
-  }
-}
-
-.casos__titulo {
-  font-size: var(--fs-h2);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -.014em;   /* -0.5px sobre 35px: a mesma tensao do nome */
-  color: var(--ink-strong);
-}
-
-.casos__lead {
-  margin-top: clamp(.5rem, 1.167vw, .875rem);
-  max-width: 32em;           /* a medida de linha da tagline do hero */
-  font-size: var(--fs-body);
-  line-height: 1.5;
-  color: var(--ink-muted);
-  text-wrap: pretty;
-}
-
-
-/* --- a lista -------------------------------------------------------------- */
-
-.casos__lista {
-  display: grid;
-  gap: clamp(2.5rem, 6vw, 4.5rem);
-}
-
-.caso { display: grid; }
-
-@media (min-width: 900px) {
-  .caso {
-    grid-template-columns: minmax(0, 63.33fr) minmax(0, 36.67fr);
-    /* a ficha comeca na altura da peca, nao no meio dela */
-    align-items: start;
-  }
-}
-
-/* O recuo mora nas celulas, nunca na secao: e o que mantem a grade colada nos
-   63,33% do viewport, igual ao hero. */
-.caso__humano { padding-inline: var(--pad-x); }
-
-@media (min-width: 900px) {
-  .caso__humano {
-    padding-left: var(--pad-x);
-    padding-right: var(--pad-seam);
-  }
-}
-
-
-/* --- a plaqueta: a peca, e a porta dela ----------------------------------- */
-
-.caso__plaqueta {
-  --plaqueta-pad: clamp(1.25rem, 2.667vw, 2rem);   /* 32 @1200 */
-  position: relative;
-  max-width: var(--case-max);
-  padding: var(--plaqueta-pad);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-plate);
-  background: var(--surface-machine);
-  overflow: clip;            /* e o que recorta a porta no raio da chapa */
-  transition:
-    transform var(--t-fast) var(--ease-out),
-    border-color var(--t-fast) ease;
-}
-
-.caso__titulo {
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -.007em;
-  color: var(--ink-strong);
-}
-
-/* O link mora no titulo, porque e o nome da peca que leva ate ela. A area de
-   clique, essa e a plaqueta inteira: o ::after cobre a peca toda. */
-.caso__porta {
-  text-decoration: none;
-  color: inherit;
-}
-
-.caso__porta::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-
-/* Com o alvo esticado, o anel de foco no texto do link mentiria sobre o
-   tamanho do alvo. Ele passa para a plaqueta. Sem :has(), o anel volta pro
-   titulo pela regra global do bloco 2: menor, mas nunca ausente. */
-.caso__porta:focus-visible { outline: none; }
-
-.caso__plaqueta:has(.caso__porta:focus-visible) {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-}
-
-.caso__nota {
-  margin-top: clamp(.375rem, .833vw, .625rem);
-  max-width: 32em;
-  font-size: var(--fs-body);
-  line-height: 1.5;
-  color: var(--ink-muted);
-  text-wrap: pretty;
-}
-
-/* A porta: a mesma pastilha do CTA do hero, deitada na borda de baixo da
-   plaqueta de ponta a ponta. A seta e a mesma faisca, virada: o hero aponta
-   pra baixo, pra dentro da pagina; esta aponta pra fora, pra peca. */
-.caso__abrir {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin:
-    clamp(1.5rem, 3.333vw, 2.5rem)
-    calc(var(--plaqueta-pad) * -1)
-    calc(var(--plaqueta-pad) * -1);
-  min-height: clamp(2.75rem, 4.333vw, 3.5rem);   /* 52 @1200, como o CTA */
-  padding-inline: var(--plaqueta-pad);
-  background: var(--cta-bg);
-  color: var(--cta-fg);
-  font-size: clamp(.9375rem, 1.5vw, 1.125rem);
-  font-weight: 600;
-  letter-spacing: -.006em;
-}
-
-.caso__seta {
-  flex: none;
-  color: var(--accent);
-  transition: transform 200ms var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .caso__plaqueta:hover {
-    transform: translateY(-1px);
-    border-color: var(--ink-muted);
+  html.js .carta {
+    position: absolute;
+    inset: 0;
+    transform-origin: center;
+    will-change: transform, filter;
   }
 
-  .caso__plaqueta:hover .caso__seta { transform: translateX(2px); }
-}
-
-.caso__plaqueta:active { transform: translateY(0) scale(.995); }
-
-
-/* --- a ficha -------------------------------------------------------------- */
-
-.caso__ficha {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: clamp(.5rem, 1.167vw, 1rem) clamp(1rem, 1.667vw, 1.25rem);
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono-sm);
-  line-height: 1.45;
-
-  /* Mobile: a junta deita. A ficha vira uma faixa rebaixada com a costura na
-     borda de ataque, que e exatamente o que o painel maquina do hero faz
-     abaixo de 900px. Sangra ate a borda porque o recuo e dela, nao do <li>. */
-  margin-top: clamp(1.75rem, 5vw, 2.5rem);
-  padding: clamp(1.25rem, 4.667vw, 1.75rem) var(--pad-x);
-  border-top: 1.5px solid var(--seam);
-  background-color: var(--surface-machine);
-  background-image: linear-gradient(180deg, var(--recess-1), var(--recess-2) var(--recess-w));
-}
-
-@media (min-width: 900px) {
-  .caso__ficha {
-    /* De pe, a faixa some: quem pinta o rebaixo e a costura e a secao.
-       O teto de largura persegue o da ficha do hero: os dois leem
-       --sheet-max, entao as duas colunas mono tem a mesma medida em
-       qualquer viewport. */
-    margin-top: 0;
-    padding: 0 var(--pad-seam);
-    max-width: calc(var(--sheet-max) + var(--pad-seam) * 2);
-    border-top: 0;
-    background: none;
-  }
-}
-
-.caso__ficha dt { color: var(--ink-muted); }
-.caso__ficha dd { color: var(--ink); }
-
-
-/* --- reduced motion -------------------------------------------------------
-   Mesmo criterio do bloco 9: cai todo o deslocamento, fica a transicao de cor. */
-
-@media (prefers-reduced-motion: reduce) {
-  .caso__plaqueta { transition: border-color var(--t-fast) ease; }
-
-  .caso__plaqueta:hover,
-  .caso__plaqueta:active { transform: none; }
-
-  .caso__seta { transition: none; }
-  .caso__plaqueta:hover .caso__seta { transform: none; }
+  html.js .carta > * { height: 100%; }
 }
 
 
-/* ── 11. A janela dos casos ────────────────────────────────────────────────────
-   Um quadro que roda a demo dentro de um <iframe>. A barra de titulo e enxuta:
-   so o nome (sans, o lado humano) e o setor (mono, o lado maquina), separados
-   pelo ponto. Mesma materia do resto: superficie aco, borda de fio. A unica
-   faisca ambar aqui e a mesma da pagina toda: o anel de foco.
-   Overlay fixo comum (nao <dialog>): renderiza igual em qualquer lugar. */
+/* --- a janela --- */
 
-.browser[hidden] { display: none; }
-
-.browser {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0px, 4vw, 3rem);
-}
-
-.browser__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(14, 20, 24, .55);
-}
-
-/* trava a rolagem do fundo enquanto a janela esta aberta */
-.browser-open, .browser-open body { overflow: hidden; }
-
-.browser__frame {
-  position: relative;
-  z-index: 1;
+.janela {
+  margin: 0;
   display: flex;
   flex-direction: column;
-  width: min(1200px, 100%);
-  height: min(860px, 100%);
   background: var(--surface-machine);
   border: 1px solid var(--rule);
   border-radius: var(--r-plate);
   overflow: clip;
-  box-shadow: 0 30px 90px rgba(14, 20, 24, .38);
-  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(14, 20, 24, .18);
 }
 
 /* --- a barra de titulo: nome . setor --- */
-.browser__bar {
+.janela__bar {
   display: flex;
   align-items: center;
   gap: .75rem;
@@ -873,7 +637,7 @@ a { color: inherit; }
   border-bottom: 1px solid var(--rule);
 }
 
-.browser__label {
+.janela__label {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
@@ -883,7 +647,7 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-.browser__name {
+.janela__name {
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: 1rem;
@@ -892,9 +656,9 @@ a { color: inherit; }
   flex: none;
 }
 
-.browser__sep { color: var(--ink-muted); flex: none; }
+.janela__sep { color: var(--ink-muted); flex: none; }
 
-.browser__setor {
+.janela__setor {
   font-family: var(--font-mono);
   font-size: var(--fs-mono-sm);
   color: var(--ink-muted);
@@ -902,80 +666,54 @@ a { color: inherit; }
   text-overflow: ellipsis;
 }
 
-.browser__btn {
+.janela__ext {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
   width: 32px;
   height: 32px;
-  padding: 0;
-  border: 0;
   border-radius: 8px;
-  background: transparent;
   color: var(--ink-muted);
-  cursor: pointer;
-  transition: background var(--t-fast) ease, color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+  transition: background var(--t-fast) ease, color var(--t-fast) ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .browser__btn:hover { background: var(--surface-machine); color: var(--ink-strong); }
+  .janela__ext:hover { background: var(--surface-machine); color: var(--ink-strong); }
 }
 
-.browser__btn:active { transform: scale(.94); }
-
 /* --- o conteudo: a demo dentro do iframe --- */
-.browser__viewport {
+.janela__viewport {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   background: var(--surface-human);
 }
 
-.browser__page {
+.janela__page {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
   border: 0;
-  background: var(--surface-human);
 }
 
-/* o iframe cobre isto quando termina de carregar */
-.browser__loading {
+.janela__loading {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-size: var(--fs-mono-sm);
   color: var(--ink-muted);
-  background: var(--surface-human);
 }
 
-.browser.is-loaded .browser__loading { display: none; }
 
-/* --- movimento: discreto de proposito. O hero ja teve a solda; a janela so
-   aparece, rapida, e para. --- */
-.browser:not([hidden]) .browser__frame    { animation: browser-in  200ms var(--ease-out) both; }
-.browser:not([hidden]) .browser__backdrop { animation: backdrop-in 200ms linear both; }
 
-@keyframes browser-in  { from { opacity: 0; transform: translateY(8px) scale(.99); } }
-@keyframes backdrop-in { from { opacity: 0; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .browser:not([hidden]) .browser__frame,
-  .browser:not([hidden]) .browser__backdrop { animation: none; }
-  .browser__btn:active { transform: none; }
-}
-
-/* --- mobile: a janela toma a tela inteira --- */
+/* --- mobile: a janela encolhe, mas segue navegavel --- */
 @media (max-width: 640px) {
-  .browser { padding: 0; }
-  .browser__frame {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-  }
+  .janela { border-radius: 14px; }
 }

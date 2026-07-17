@@ -35,6 +35,7 @@
 -->
 <script>
   document.documentElement.classList.add('type-pending');
+  document.documentElement.classList.add('js');
   setTimeout(function () {
     document.documentElement.classList.remove('type-pending');
   }, 700);
@@ -45,177 +46,90 @@
 <body>
 
 <main id="conteudo">
+  <div class="rolo" id="rolo">
+    <div class="palco">
+      <div class="baralho" id="baralho">
 
-  <!-- ===================================================================
-       HERO . "A junta"
-       A chapa e dividida por uma costura assimetrica em 63,33%.
-       Esquerda = humano / web: superficie mais clara, tipografia sans.
-       Direita  = maquina / ERP: superficie rebaixada, tipografia mono, so dados.
-       No load a costura e soldada uma vez, com o arco ambar viajando na ponta.
-       Abaixo de 900px a junta gira 90 graus: a mesma peca, deitada.
-       =================================================================== -->
-  <section class="hero" aria-labelledby="nome">
+        <!-- ===========================================================
+             CARTA 1 . apresentacao (a junta)
+             =========================================================== -->
+        <div class="carta">
+          <div class="hero card--intro" aria-labelledby="nome">
 
-    <!-- lado humano -->
-    <div class="human">
-      <h1 class="human__name reveal" id="nome">Bruno Bento</h1>
-      <p class="human__role reveal">Software Engineer Fullstack</p>
-      <p class="human__tagline reveal">Sistemas internos integrados ao ERP TOTVS Protheus e projetos que facilitam a vida das pessoas, do banco ao deploy.</p>
-      <p class="human__act reveal">
-        <a class="cta" href="#casos">
-          <span>Ver os casos</span>
-          <svg class="cta__arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-            <path d="M8 1.5 v13 M2.5 9 L8 14.5 L13.5 9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-      </p>
-    </div>
+            <div class="human">
+              <h1 class="human__name reveal" id="nome">Bruno Bento</h1>
+              <p class="human__role reveal">Software Engineer Fullstack</p>
+              <p class="human__tagline reveal">Sistemas internos integrados ao ERP TOTVS Protheus e projetos que facilitam a vida das pessoas, do banco ao deploy.</p>
+            </div>
 
-    <!-- lado maquina -->
-    <aside class="machine" aria-labelledby="ficha">
-      <h2 class="sr-only" id="ficha">Ficha técnica</h2>
+            <aside class="machine" aria-labelledby="ficha">
+              <h2 class="sr-only" id="ficha">Ficha técnica</h2>
 
-      <!-- a junta: a costura, e a solda que desce por ela -->
-      <div class="seam" aria-hidden="true"></div>
-      <div class="torch" aria-hidden="true"><span class="arc"></span></div>
+              <div class="seam" aria-hidden="true"></div>
+              <div class="torch" aria-hidden="true"><span class="arc"></span></div>
 
-      <div class="sheet">
-        <p class="sheet__lead reveal">Tech Lead de Protheus</p>
+              <div class="sheet">
+                <p class="sheet__lead reveal">Tech Lead de Protheus</p>
 
-        <ul class="sheet__stack">
-          <li class="reveal">React</li>
-          <li class="reveal">Node</li>
-          <li class="reveal">Oracle</li>
-        </ul>
+                <ul class="sheet__stack">
+                  <li class="reveal">React</li>
+                  <li class="reveal">Node</li>
+                  <li class="reveal">Oracle</li>
+                </ul>
 
-        <div class="sheet__meta reveal">
-          <p class="sheet__loc">São José do Rio Preto, SP · Brasil</p>
-          <ul class="sheet__links">
-            <li>
-              <a href="https://github.com/brunobento04" rel="me noopener">
-                <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true" focusable="false">
-                  <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                </svg>
-                <span>brunobento04</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.linkedin.com/in/bruno-bento-932a7219b" rel="me noopener">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-                  <path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
-                </svg>
-                <span>LinkedIn</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </aside>
+                <div class="sheet__meta reveal">
+                  <p class="sheet__loc">São José do Rio Preto, SP · Brasil</p>
+                  <ul class="sheet__links">
+                    <li>
+                      <a href="https://github.com/brunobento04" rel="me noopener">
+                        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true" focusable="false">
+                          <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        <span>brunobento04</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.linkedin.com/in/bruno-bento-932a7219b" rel="me noopener">
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                          <path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                        </svg>
+                        <span>LinkedIn</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </aside>
 
-  </section>
-
-  <!--
-    Alvos vazios, so para as ancoras resolverem enquanto as secoes nao existem.
-  -->
-  <section class="section" id="sobre"></section>
-  <section class="section" id="stack"></section>
-
-  <!-- ===================================================================
-       CASOS . a vitrine
-       A junta continua daqui pra baixo: a costura desce na mesma coluna do
-       hero e o painel maquina segue atras dela. Do mesmo jeito, a peca (web,
-       humano) fica a esquerda; a direita, so a ficha, em mono.
-       Um caso e um <li>. Os proximos empilham nesta lista: a costura e o
-       painel sao da secao, nao do caso, entao a linha continua sozinha.
-       =================================================================== -->
-  <section class="section casos" id="casos" aria-labelledby="casos-titulo">
-
-    <header class="casos__intro">
-      <h2 class="casos__titulo" id="casos-titulo">Casos</h2>
-      <p class="casos__lead">Cada caso abre aqui mesmo, numa janela de navegador, e roda navegável do jeito que é entregue.</p>
-    </header>
-
-    <ul class="casos__lista">
-
-      <li class="caso">
-
-        <div class="caso__humano">
-          <div class="caso__plaqueta">
-            <h3 class="caso__titulo">
-              <a class="caso__porta" href="demos/eletrica/index.html"
-                 data-demo="demos/eletrica/index.html"
-                 data-demo-name="Voltera"
-                 data-demo-setor="elétrica e energia solar"
-                 data-demo-title="Voltera, landing de serviço">Landing de serviço<span class="sr-only">: abrir a demo navegável</span></a>
-            </h3>
-            <p class="caso__nota">Página de captação inteira. O formulário monta o pedido e abre no WhatsApp; as fotos são slots, esperando as do cliente.</p>
-            <p class="caso__abrir" aria-hidden="true">
-              <span>Abrir a demo</span>
-              <svg class="caso__seta" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                <path d="M1.5 8 h13 M9 2.5 L14.5 8 L9 13.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </p>
           </div>
         </div>
 
-        <dl class="caso__ficha">
-          <dt>setor</dt>
-          <dd>elétrica e energia solar</dd>
+        <!-- ===========================================================
+             CARTA 2 . caso Voltera (demo ao vivo)
+             =========================================================== -->
+        <div class="carta">
+          <figure class="janela">
+            <figcaption class="janela__bar">
+              <span class="janela__label">
+                <span class="janela__name">Voltera</span>
+                <span class="janela__sep" aria-hidden="true">·</span>
+                <span class="janela__setor">elétrica e energia solar</span>
+              </span>
+              <a class="janela__ext" href="demos/eletrica/index.html" target="_blank" rel="noopener" aria-label="Abrir a demo navegável em uma aba nova">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h4v4"/><path d="M13 3 7.5 8.5"/><path d="M11 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/></svg>
+              </a>
+            </figcaption>
+            <div class="janela__viewport">
+              <p class="janela__loading" aria-hidden="true">carregando voltera</p>
+              <iframe class="janela__page" src="demos/eletrica/index.html" title="Voltera, landing de serviço (demonstração)" loading="lazy"></iframe>
+            </div>
+          </figure>
+        </div>
 
-          <dt>marca</dt>
-          <dd>Voltera, fictícia</dd>
-
-          <dt>blocos</dt>
-          <dd>hero, serviços, diferenciais, antes e depois, depoimentos, área de atuação, orçamento, rodapé</dd>
-
-          <dt>stack</dt>
-          <dd>HTML, CSS e JS puro, sem framework</dd>
-        </dl>
-
-      </li>
-
-    </ul>
-
-  </section>
-
-  <section class="section" id="contato"></section>
-
-</main>
-
-<!-- ===================================================================
-     A JANELA DOS CASOS
-     Clicar num caso abre aqui: um quadro com uma barra de titulo enxuta (so o
-     nome e o setor) e a demo rodando dentro do <iframe>, navegavel de verdade
-     (rola, preenche o formulario, arrasta o antes/depois).
-     E um overlay fixo comum (nao <dialog>), pra renderizar igual em qualquer
-     lugar, inclusive em preview. O JS cuida de Esc, backdrop e foco.
-     Sem JS, o link do caso continua abrindo a demo na pagina inteira:
-     progressive enhancement, nao dependencia.
-     =================================================================== -->
-<div class="browser" id="browser" hidden>
-  <div class="browser__backdrop" data-close></div>
-
-  <div class="browser__frame" role="dialog" aria-modal="true" aria-labelledby="browser-name">
-
-    <div class="browser__bar">
-      <p class="browser__label">
-        <span class="browser__name" id="browser-name">Voltera</span>
-        <span class="browser__sep" aria-hidden="true">·</span>
-        <span class="browser__setor" id="browser-setor">elétrica e energia solar</span>
-      </p>
-
-      <button class="browser__btn browser__btn--close" id="browser-close" type="button" aria-label="Fechar a demonstração">
-        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg>
-      </button>
+      </div>
     </div>
-
-    <div class="browser__viewport">
-      <p class="browser__loading" id="browser-loading" aria-hidden="true">carregando</p>
-      <iframe class="browser__page" id="browser-page" title="Demonstração navegável"></iframe>
-    </div>
-
   </div>
-</div>
+</main>
 
 </body>
 </html>
