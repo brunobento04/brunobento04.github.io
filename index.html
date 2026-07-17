@@ -119,10 +119,103 @@
   -->
   <section class="section" id="sobre"></section>
   <section class="section" id="stack"></section>
-  <section class="section" id="casos"></section>
+
+  <!-- ===================================================================
+       CASOS . a vitrine
+       A junta continua daqui pra baixo: a costura desce na mesma coluna do
+       hero e o painel maquina segue atras dela. Do mesmo jeito, a peca (web,
+       humano) fica a esquerda; a direita, so a ficha, em mono.
+       Um caso e um <li>. Os proximos empilham nesta lista: a costura e o
+       painel sao da secao, nao do caso, entao a linha continua sozinha.
+       =================================================================== -->
+  <section class="section casos" id="casos" aria-labelledby="casos-titulo">
+
+    <header class="casos__intro">
+      <h2 class="casos__titulo" id="casos-titulo">Casos</h2>
+      <p class="casos__lead">Cada caso abre aqui mesmo, numa janela de navegador, e roda navegável do jeito que é entregue.</p>
+    </header>
+
+    <ul class="casos__lista">
+
+      <li class="caso">
+
+        <div class="caso__humano">
+          <div class="caso__plaqueta">
+            <h3 class="caso__titulo">
+              <a class="caso__porta" href="demos/eletrica/index.html"
+                 data-demo="demos/eletrica/index.html"
+                 data-demo-name="Voltera"
+                 data-demo-setor="elétrica e energia solar"
+                 data-demo-title="Voltera, landing de serviço">Landing de serviço<span class="sr-only">: abrir a demo navegável</span></a>
+            </h3>
+            <p class="caso__nota">Página de captação inteira. O formulário monta o pedido e abre no WhatsApp; as fotos são slots, esperando as do cliente.</p>
+            <p class="caso__abrir" aria-hidden="true">
+              <span>Abrir a demo</span>
+              <svg class="caso__seta" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+                <path d="M1.5 8 h13 M9 2.5 L14.5 8 L9 13.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </p>
+          </div>
+        </div>
+
+        <dl class="caso__ficha">
+          <dt>setor</dt>
+          <dd>elétrica e energia solar</dd>
+
+          <dt>marca</dt>
+          <dd>Voltera, fictícia</dd>
+
+          <dt>blocos</dt>
+          <dd>hero, serviços, diferenciais, antes e depois, depoimentos, área de atuação, orçamento, rodapé</dd>
+
+          <dt>stack</dt>
+          <dd>HTML, CSS e JS puro, sem framework</dd>
+        </dl>
+
+      </li>
+
+    </ul>
+
+  </section>
+
   <section class="section" id="contato"></section>
 
 </main>
+
+<!-- ===================================================================
+     A JANELA DOS CASOS
+     Clicar num caso abre aqui: um quadro com uma barra de titulo enxuta (so o
+     nome e o setor) e a demo rodando dentro do <iframe>, navegavel de verdade
+     (rola, preenche o formulario, arrasta o antes/depois).
+     E um overlay fixo comum (nao <dialog>), pra renderizar igual em qualquer
+     lugar, inclusive em preview. O JS cuida de Esc, backdrop e foco.
+     Sem JS, o link do caso continua abrindo a demo na pagina inteira:
+     progressive enhancement, nao dependencia.
+     =================================================================== -->
+<div class="browser" id="browser" hidden>
+  <div class="browser__backdrop" data-close></div>
+
+  <div class="browser__frame" role="dialog" aria-modal="true" aria-labelledby="browser-name">
+
+    <div class="browser__bar">
+      <p class="browser__label">
+        <span class="browser__name" id="browser-name">Voltera</span>
+        <span class="browser__sep" aria-hidden="true">·</span>
+        <span class="browser__setor" id="browser-setor">elétrica e energia solar</span>
+      </p>
+
+      <button class="browser__btn browser__btn--close" id="browser-close" type="button" aria-label="Fechar a demonstração">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+      </button>
+    </div>
+
+    <div class="browser__viewport">
+      <p class="browser__loading" id="browser-loading" aria-hidden="true">carregando</p>
+      <iframe class="browser__page" id="browser-page" title="Demonstração navegável"></iframe>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
