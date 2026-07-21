@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>4Evolut · Painel de gestão (demonstração)</title>
+<meta name="description" content="Demonstração navegável de um painel de gestão multi-segmento: agenda, clientes e financeiro. Dados fictícios, 100% no navegador.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230d1b3e'/%3E%3Cpath d='M50 24 30 54h16l-4 22 24-32H50z' fill='%232563eb'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   4Evolut · painel de gestão (DEMO). Product UI: crisp, denso, rápido.
+   Regência: emil (motion com propósito, :active, skeleton) + impeccable-product
+   (sem card aninhado, tabela com divide-y, contraste AA, cards 14px).
+   Animação: só transform/opacity, ease-out custom, sem bounce, < 300ms.
+   Nenhuma cor pura (preto/branco absolutos). Ícones: uma família SVG (estilo lucide).
+   ========================================================================== */
+
+:root{
+  /* superfícies */
+  --bg:        #eaeef5;
+  --surface:   #fbfcfe;
+  --surface-2: #f1f4fa;   /* fills, hover de linha, base do skeleton */
+  --navy:      #0d1b3e;   /* sidebar, texto forte de marca */
+  --navy-2:    #16264d;
+
+  /* tinta */
+  --ink:       #101b34;
+  --ink-2:     #33415d;
+  --muted:     #64748b;
+  --line:      #e2e8f1;
+
+  /* ação e status */
+  --accent:      #2563eb;
+  --accent-ink:  #1d4ed8;
+  --accent-soft: #e6effe;
+  --success:      #10b981;
+  --success-ink:  #047857;
+  --success-soft: #d9f7ec;
+  --danger:      #e11d48;
+  --danger-ink:  #be123c;
+  --danger-soft: #fde4ea;
+  --amber-ink:   #b45309;
+  --amber-soft:  #fbf0d9;
+
+  /* sidebar */
+  --side-fg:      #c3d0e8;
+  --side-fg-soft: #8a9bc0;
+  --side-fg-on:   #eef3fc;
+
+  /* raio, sombra, motion */
+  --r-card: 14px;
+  --r-sm:   10px;
+  --r-pill: 999px;
+  --sh-1: 0 1px 2px rgba(13,27,62,.06), 0 1px 3px rgba(13,27,62,.05);
+  --sh-2: 0 12px 34px rgba(13,27,62,.14);
+  --ease: cubic-bezier(.23,1,.32,1);   /* strong ease-out, sem bounce */
+  --t: 160ms;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,p{margin:0;}
+button{font:inherit;color:inherit;}
+.ico{width:1em;height:1em;display:inline-block;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;flex-shrink:0;}
+:where(button,a,input,select):focus-visible{outline:2px solid var(--accent-ink);outline-offset:2px;border-radius:4px;}
+
+/* ── shell ────────────────────────────────────────────────────────────────── */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100dvh;}
+
+.side{
+  background:var(--navy);
+  color:var(--side-fg);
+  display:flex;flex-direction:column;
+  padding:16px 12px;
+  position:sticky;top:0;height:100dvh;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;}
+.brand__mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,var(--accent),#3b82f6);
+  display:grid;place-items:center;color:var(--side-fg-on);font-size:19px;flex-shrink:0;box-shadow:0 6px 14px rgba(37,99,235,.4);}
+.brand__name{font-family:'Outfit',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.4px;color:var(--side-fg-on);}
+.brand__name b{color:#7aa5ff;font-weight:800;}
+.brand__sub{font-size:11px;color:var(--side-fg-soft);font-weight:600;letter-spacing:.2px;}
+
+.nav{display:flex;flex-direction:column;gap:3px;margin-top:6px;}
+.nav__cap{font-size:10.5px;text-transform:uppercase;letter-spacing:1.4px;color:var(--side-fg-soft);font-weight:700;padding:12px 10px 6px;}
+.nav__item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 11px;border-radius:var(--r-sm);
+  color:var(--side-fg);background:transparent;border:0;width:100%;text-align:left;cursor:pointer;
+  font-weight:600;font-size:14px;
+  transition:background var(--t) ease,color var(--t) ease;
+}
+.nav__item .ico{font-size:18px;color:var(--side-fg-soft);transition:color var(--t) ease;}
+.nav__item:hover{background:rgba(255,255,255,.055);color:var(--side-fg-on);}
+.nav__item:active{transform:scale(.985);}
+.nav__item[aria-current="page"]{background:rgba(122,165,255,.16);color:var(--side-fg-on);}
+.nav__item[aria-current="page"] .ico{color:#7aa5ff;}
+.nav__count{margin-left:auto;font-size:11px;font-weight:700;color:var(--side-fg-soft);
+  background:rgba(255,255,255,.07);padding:1px 8px;border-radius:var(--r-pill);}
+.nav__item[aria-current="page"] .nav__count{color:#7aa5ff;background:rgba(122,165,255,.14);}
+
+.side__foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 8px 2px;border-top:1px solid rgba(255,255,255,.08);}
+.side__avatar{width:32px;height:32px;border-radius:50%;background:#2a3c66;color:var(--side-fg-on);
+  display:grid;place-items:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+.side__who b{color:var(--side-fg-on);font-size:12.5px;display:block;font-weight:700;}
+.side__who span{font-size:11px;color:var(--side-fg-soft);}
+
+/* ── main ─────────────────────────────────────────────────────────────────── */
+.main{display:flex;flex-direction:column;min-width:0;}
+.topbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:13px clamp(16px,3vw,30px);
+  background:rgba(234,238,245,.86);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topbar__title{font-family:'Outfit',sans-serif;font-weight:700;font-size:19px;letter-spacing:-.3px;}
+.topbar__crumb{font-size:12.5px;color:var(--muted);font-weight:600;}
+.seg{display:flex;gap:3px;margin-left:auto;background:var(--surface-2);padding:3px;border-radius:var(--r-pill);border:1px solid var(--line);}
+.seg__btn{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;cursor:pointer;
+  padding:7px 13px;border-radius:var(--r-pill);font-weight:600;font-size:12.5px;color:var(--ink-2);
+  transition:background var(--t) ease,color var(--t) ease;white-space:nowrap;}
+.seg__btn .ico{font-size:15px;color:var(--muted);}
+.seg__btn:hover{color:var(--ink);}
+.seg__btn:active{transform:scale(.97);}
+.seg__btn[aria-pressed="true"]{background:var(--navy);color:var(--side-fg-on);box-shadow:var(--sh-1);}
+.seg__btn[aria-pressed="true"] .ico{color:#7aa5ff;}
+
+.content{padding:clamp(16px,2.4vw,26px) clamp(16px,3vw,30px);max-width:1180px;width:100%;}
+
+/* view enter (opacity + translateY, < 300ms) */
+.view{animation:viewIn 240ms var(--ease) both;}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px);}}
+
+/* ── cards / grid ───────────────────────────────────────────────────────────
+   sem card aninhado: todo card é filho direto de .grid/.content. */
+.grid{display:grid;gap:14px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-1);}
+.card__head{display:flex;align-items:center;gap:10px;padding:16px 18px 0;}
+.card__title{font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.2px;}
+.card__title .ico{font-size:17px;color:var(--accent-ink);vertical-align:-.18em;margin-right:7px;}
+.card__sub{font-size:12px;color:var(--muted);font-weight:500;}
+.card__act{margin-left:auto;}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.kpi{padding:16px 17px;}
+.kpi__top{display:flex;align-items:center;gap:9px;}
+.kpi__ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:18px;flex-shrink:0;}
+.kpi__label{font-size:12px;color:var(--muted);font-weight:600;}
+.kpi__val{font-family:'Outfit',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.8px;margin-top:11px;color:var(--ink);font-variant-numeric:tabular-nums;}
+.kpi__delta{font-size:11.5px;font-weight:700;margin-top:3px;display:inline-flex;align-items:center;gap:4px;}
+.kpi__delta .ico{font-size:13px;}
+.up{color:var(--success-ink);}
+.down{color:var(--danger-ink);}
+
+/* chart (barras, crescem com scaleY) */
+.chart{padding:6px 18px 18px;}
+.bars{display:flex;align-items:flex-end;gap:clamp(6px,1.4vw,16px);height:180px;padding-top:16px;}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+.bar__col{width:100%;max-width:46px;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#3b82f6,var(--accent));
+  transform:scaleY(0);transform-origin:bottom;animation:barGrow 520ms var(--ease) both;position:relative;cursor:default;}
+.bar:last-child .bar__col{background:linear-gradient(180deg,#34d399,var(--success));}
+.bar__col:hover .bar__tip{opacity:1;transform:translate(-50%,-6px);}
+.bar__tip{position:absolute;bottom:100%;left:50%;transform:translate(-50%,0);opacity:0;pointer-events:none;
+  background:var(--navy);color:var(--side-fg-on);font-size:11px;font-weight:700;padding:5px 9px;border-radius:7px;
+  white-space:nowrap;transition:opacity var(--t) ease,transform var(--t) var(--ease);box-shadow:var(--sh-2);}
+.bar__lab{font-size:11px;color:var(--muted);font-weight:600;}
+@keyframes barGrow{from{transform:scaleY(0);}}
+
+/* listas / tabelas com divide-y */
+.rows{display:flex;flex-direction:column;}
+.row{display:flex;align-items:center;gap:13px;padding:13px 18px;border-top:1px solid var(--line);
+  transition:background var(--t) ease;text-align:left;}
+.rows>.row:first-child{border-top:0;}
+.row--btn{width:100%;background:transparent;border-left:0;border-right:0;border-bottom:0;cursor:pointer;}
+.row--btn:hover{background:var(--surface-2);}
+.row--btn:active{transform:scale(.996);}
+.row.is-active{background:var(--accent-soft);}
+.avatar{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;
+  background:var(--surface-2);color:var(--ink-2);}
+.row__main{min-width:0;flex:1;}
+.row__name{font-weight:700;font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row__sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row__meta{margin-left:auto;text-align:right;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+.row__val{font-family:'Outfit',sans-serif;font-weight:700;font-size:13.5px;font-variant-numeric:tabular-nums;}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--r-pill);white-space:nowrap;}
+.badge .ico{font-size:13px;}
+.b-ok{background:var(--success-soft);color:var(--success-ink);}
+.b-wait{background:var(--amber-soft);color:var(--amber-ink);}
+.b-info{background:var(--accent-soft);color:var(--accent-ink);}
+.b-mut{background:var(--surface-2);color:var(--ink-2);}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);font-weight:600;font-size:13px;padding:8px 14px;border-radius:var(--r-sm);cursor:pointer;
+  transition:background var(--t) ease,border-color var(--t) ease,transform var(--t) var(--ease);}
+.btn .ico{font-size:16px;}
+.btn:hover{background:var(--surface-2);}
+.btn:active{transform:scale(.97);}
+.btn--pri{background:var(--accent);border-color:var(--accent);color:var(--side-fg-on);box-shadow:0 6px 14px rgba(37,99,235,.28);}
+.btn--pri:hover{background:var(--accent-ink);}
+.btn--sm{padding:6px 11px;font-size:12px;}
+
+/* toolbar de busca / filtro */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);}
+.field{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:8px 12px;flex:1;min-width:180px;transition:border-color var(--t) ease,background var(--t) ease;}
+.field:focus-within{border-color:var(--accent);background:var(--surface);}
+.field .ico{font-size:17px;color:var(--muted);flex-shrink:0;}
+.field input{border:0;background:transparent;outline:0;flex:1;font:inherit;font-size:14px;color:var(--ink);min-width:0;}
+.field input::placeholder{color:#9aa6bb;}
+select.sel{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);padding:8px 12px;font:inherit;
+  font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;}
+
+/* segmented toggle (semana/dia) */
+.tabs{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);padding:3px;border-radius:var(--r-sm);}
+.tabs button{border:0;background:transparent;cursor:pointer;padding:6px 14px;border-radius:7px;font-weight:600;font-size:12.5px;color:var(--ink-2);
+  transition:background var(--t) ease,color var(--t) ease;}
+.tabs button:active{transform:scale(.97);}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh-1);}
+
+/* agenda grid */
+.cal{overflow:auto;padding:6px 6px 10px;}
+.cal__grid{display:grid;grid-template-columns:56px repeat(6,minmax(112px,1fr));min-width:720px;}
+.cal__h{position:sticky;top:0;background:var(--surface);padding:10px 8px;text-align:center;font-weight:700;font-size:12px;
+  border-bottom:1px solid var(--line);z-index:2;}
+.cal__h span{display:block;font-size:10.5px;color:var(--muted);font-weight:600;}
+.cal__h--today{color:var(--accent-ink);}
+.cal__t{font-size:11px;color:var(--muted);font-weight:600;padding:8px;text-align:right;border-bottom:1px solid var(--line);border-right:1px solid var(--line);}
+.cell{border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-height:52px;padding:4px;position:relative;
+  cursor:pointer;transition:background var(--t) ease;}
+.cell:hover{background:var(--surface-2);}
+.cell:hover .cell__add{opacity:1;}
+.cell__add{position:absolute;inset:4px;border:1px dashed #b9c6dd;border-radius:8px;display:grid;place-items:center;
+  color:var(--accent-ink);font-size:16px;opacity:0;transition:opacity var(--t) ease;pointer-events:none;}
+.appt{border:0;width:100%;text-align:left;cursor:pointer;border-radius:8px;padding:6px 8px;margin-bottom:3px;
+  background:var(--accent-soft);color:var(--accent-ink);transition:transform var(--t) var(--ease),box-shadow var(--t) ease;
+  animation:apptIn 220ms var(--ease) both;}
+.appt:hover{box-shadow:var(--sh-1);}
+.appt:active{transform:scale(.97);}
+.appt.paid{background:var(--success-soft);color:var(--success-ink);}
+.appt__t{font-size:10.5px;font-weight:700;opacity:.85;}
+.appt__n{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.appt__s{font-size:10.5px;font-weight:600;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.appt__pay{display:inline-flex;align-items:center;gap:3px;margin-top:2px;font-size:10px;font-weight:700;}
+.appt__pay .ico{font-size:12px;}
+@keyframes apptIn{from{opacity:0;transform:scale(.94);}}
+
+.cal__legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:600;}
+.dotlg{display:inline-flex;align-items:center;gap:6px;}
+.dotlg i{width:11px;height:11px;border-radius:4px;display:inline-block;}
+
+/* dia view */
+.dayhead{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);}
+.dayhead h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;}
+
+/* financeiro table */
+.ftable{width:100%;}
+.ft__row{display:grid;grid-template-columns:74px 1fr 120px 116px 116px;align-items:center;gap:12px;
+  padding:11px 18px;border-top:1px solid var(--line);font-size:13px;}
+.rows>.ft__row:first-child{border-top:0;}
+.ft__head{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;background:var(--surface-2);border-radius:0;}
+.ft__date{color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums;}
+.ft__desc b{font-weight:700;display:block;color:var(--ink);}
+.ft__desc span{font-size:11.5px;color:var(--muted);}
+.ft__amt{text-align:right;font-family:'Outfit',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;}
+.ft__bal{text-align:right;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;}
+.amt-in{color:var(--success-ink);}
+.amt-out{color:var(--danger-ink);}
+
+/* mini-detalhe do cliente */
+.detail__head{display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid var(--line);}
+.detail__av{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-weight:800;font-size:16px;
+  background:var(--accent-soft);color:var(--accent-ink);flex-shrink:0;}
+.detail__name{font-family:'Outfit',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.2px;}
+.detail__sub{font-size:12.5px;color:var(--muted);font-weight:600;}
+.detail__stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+.detail__stat{background:var(--surface);padding:14px 18px;}
+.detail__stat b{font-family:'Outfit',sans-serif;font-size:19px;font-weight:700;display:block;letter-spacing:-.4px;}
+.detail__stat span{font-size:11.5px;color:var(--muted);font-weight:600;}
+.detail__list{padding:6px 0;}
+.dl{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:12.5px;}
+.dl .ico{font-size:16px;color:var(--muted);}
+.dl b{margin-left:auto;font-weight:700;color:var(--ink-2);}
+.detail__empty{padding:44px 18px;text-align:center;color:var(--muted);}
+.detail__empty .ico{font-size:30px;opacity:.5;}
+.detail__empty p{margin-top:10px;font-size:13px;font-weight:600;}
+
+/* empty state */
+.empty{padding:46px 24px;text-align:center;}
+.empty__ico{width:56px;height:56px;border-radius:16px;background:var(--surface-2);color:var(--muted);
+  display:grid;place-items:center;font-size:26px;margin:0 auto 14px;}
+.empty h4{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;}
+.empty p{font-size:13px;color:var(--muted);margin-top:5px;max-width:320px;margin-inline:auto;}
+
+/* skeleton (só opacity/transform na animação) */
+.sk{background:var(--surface-2);border-radius:7px;position:relative;overflow:hidden;}
+.sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shimmer 1.25s infinite;}
+.sk-line{height:11px;}
+.sk-chip{width:38px;height:38px;border-radius:11px;flex-shrink:0;}
+@keyframes shimmer{100%{transform:translateX(100%);}}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+.foot-note{padding:16px 4px 6px;font-size:11.5px;color:var(--muted);text-align:center;}
+
+/* responsivo */
+@media (max-width:960px){
+  .app{grid-template-columns:64px 1fr;}
+  .brand__name,.brand__sub,.nav__cap,.nav__item span.lbl,.nav__count,.side__who{display:none;}
+  .brand{justify-content:center;padding:6px 0 16px;}
+  .nav__item{justify-content:center;padding:12px 0;}
+  .side__foot{justify-content:center;}
+  .kpis{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:620px){
+  .kpis{grid-template-columns:repeat(2,1fr);}
+  .ft__row{grid-template-columns:1fr auto;}
+  .ft__date,.ft__bal{display:none;}
+  .seg__btn span{display:none;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  .view{animation:none;}
+  .btn:active,.appt:active,.nav__item:active,.seg__btn:active,.row--btn:active,.tabs button:active{transform:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- família única de ícones: SVG de linha (viewBox 24, stroke 1.75), estilo lucide -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+<defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 3v3M16 3v3"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.3"/><path d="M3.3 19a5.7 5.7 0 0111.4 0M16.5 5.3a3.2 3.2 0 010 6.2M17.5 19a5.4 5.4 0 00-3-4.7"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 015.5 5.5h11a2 2 0 012 2"/><rect x="3.5" y="7.5" width="17" height="12" rx="2.2"/><path d="M16.5 13.2h2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-3.7-3.7"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5 11-11"/></symbol>
+<symbol id="i-check2" viewBox="0 0 24 24"><path d="M1.5 12.5l4 4 7.5-8.5M11.5 16.5l1 1 8.5-9.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v4.5l3 1.8"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.8 3.5H10l1.6 4.2-2.1 1.5a11.5 11.5 0 005.3 5.3l1.5-2.1 4.2 1.6v3.2a1.6 1.6 0 01-1.7 1.6A16.6 16.6 0 015.2 6.7 1.6 1.6 0 016.8 3.5z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M4 7.5l8 5.5 8-5.5"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.6V4.8a1.3 1.3 0 011.3-1.3h7.8l7.6 7.6a1.4 1.4 0 010 2l-6.6 6.6a1.4 1.4 0 01-2 0L3.5 12.6z"/><circle cx="8" cy="8" r="1.4"/></symbol>
+<symbol id="i-calplus" viewBox="0 0 24 24"><path d="M3 9h18M8 3v3M16 3v3"/><path d="M20.5 20.5v-11a2.5 2.5 0 00-2.5-2.5H6a2.5 2.5 0 00-2.5 2.5V18A2.5 2.5 0 006 20.5h6"/><path d="M16.5 18h5M19 15.5v5"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-chevL" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+<symbol id="i-chevR" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.5 13.5L6 5.5a2 2 0 011.9-1.4h8.2A2 2 0 0118 5.5l2.5 8v4A1.5 1.5 0 0119 19H5a1.5 1.5 0 01-1.5-1.5z"/><path d="M3.5 13.5H8a1 1 0 011 1 2 2 0 004 0 1 1 0 011-1h4.5"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4.5H6.5A1.5 1.5 0 005 6v12a1.5 1.5 0 001.5 1.5H14"/><path d="M16.5 8.5 20 12l-3.5 3.5M20 12H9.5"/></symbol>
+<symbol id="i-paw" viewBox="0 0 24 24"><ellipse cx="12" cy="15.5" rx="4.2" ry="3.3"/><ellipse cx="6.4" cy="10.5" rx="1.9" ry="2.3"/><ellipse cx="17.6" cy="10.5" rx="1.9" ry="2.3"/><ellipse cx="9.5" cy="6.4" rx="1.7" ry="2.1"/><ellipse cx="14.5" cy="6.4" rx="1.7" ry="2.1"/></symbol>
+<symbol id="i-steth" viewBox="0 0 24 24"><path d="M5 3v5.5a4 4 0 008 0V3"/><path d="M4 3h1.6M11.4 3H13"/><path d="M9 15.5a5 5 0 0010 0v-2.2"/><circle cx="19" cy="11" r="2.1"/></symbol>
+<symbol id="i-dumb" viewBox="0 0 24 24"><path d="M2.5 12h2M19.5 12h2"/><rect x="4.5" y="8" width="3.4" height="8" rx="1.2"/><rect x="16.1" y="8" width="3.4" height="8" rx="1.2"/><path d="M7.9 12h8.2"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5 5l1.8 1.8M17.2 17.2 19 19M19 5l-1.8 1.8M6.8 17.2 5 19"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+  <!-- ── sidebar ── -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand__mark"><svg class="ico" style="stroke-width:2"><use href="#i-grid"/></svg></div>
+      <div>
+        <div class="brand__name">4<b>Evolut</b></div>
+        <div class="brand__sub">painel de gestão</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav" aria-label="Seções"></nav>
+    <div class="side__foot">
+      <div class="side__avatar">BB</div>
+      <div class="side__who"><b>Bruno Bento</b><span>administrador</span></div>
+    </div>
+  </aside>
+
+  <!-- ── main ── -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar__title" id="viewTitle">Dashboard</div>
+        <div class="topbar__crumb" id="viewCrumb">Visão geral do mês</div>
+      </div>
+      <div class="seg" id="seg" role="group" aria-label="Trocar segmento"></div>
+    </header>
+    <main class="content" id="content" aria-live="polite"></main>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   Estado + dados mock (arrays JS, 100% client-side, nomes PT-BR plausíveis,
+   valores tipo R$ 1.240,00). "4Evolut" é liberado pelo dono como propaganda.
+   ========================================================================== */
+"use strict";
+
+const BRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v);
+const INT = v => new Intl.NumberFormat('pt-BR').format(v);
+const ini = nome => nome.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const el = (html)=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;};
+
+const DIAS = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DATAS = ['20/07','21/07','22/07','23/07','24/07','25/07'];
+const HORAS = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+const TODAY = 1; // Ter destacado
+
+/* --- três segmentos, cada um com seu vocabulário e seus dados --- */
+const SEG = {
+  vet:{
+    nome:'Veterinária', icon:'i-paw', clientes:'Pacientes', clienteSing:'paciente',
+    kpi:{fat:38420, ag:9, cli:214, comp:92},
+    delta:{fat:'+12,4%', ag:'+3', cli:'+18', comp:'+2,1 pts'},
+    revenue:[26800,28200,25900,31100,29800,33400,36200,38420],
+    servicos:[
+      {nome:'Consulta clínica', valor:140},
+      {nome:'Vacina V10', valor:95},
+      {nome:'Banho e tosa', valor:80},
+      {nome:'Retorno', valor:70},
+      {nome:'Exame de imagem', valor:210},
+      {nome:'Castração', valor:480},
+    ],
+    lista:[
+      {nome:'Rex', sub:'Golden Retriever · tutor Mariana Alves', fone:'(17) 99812-4405', mail:'mariana.alves@gmail.com', tag:'Vacina em dia', desde:'Mar 2024', visitas:14, ticket:150},
+      {nome:'Mel', sub:'SRD · tutor Carlos Eduardo Souza', fone:'(17) 99640-1187', mail:'cadu.souza@gmail.com', tag:'Retorno', desde:'Jun 2023', visitas:9, ticket:118},
+      {nome:'Thor', sub:'Bulldog Francês · tutor Fernanda Lima', fone:'(17) 99521-7788', mail:'fer.lima@outlook.com', desde:'Set 2024', visitas:6, ticket:210},
+      {nome:'Nina', sub:'Poodle · tutor Roberto Nunes', fone:'(17) 99433-2910', mail:'roberto.nunes@gmail.com', tag:'Vacina em dia', desde:'Fev 2022', visitas:22, ticket:96},
+      {nome:'Amora', sub:'Gato Siamês · tutor Juliana Prado', fone:'(17) 99188-6521', mail:'ju.prado@gmail.com', desde:'Nov 2024', visitas:4, ticket:140},
+      {nome:'Bidu', sub:'Beagle · tutor Anderson Ribeiro', fone:'(17) 99702-3348', mail:'anderson.r@gmail.com', desde:'Jan 2025', visitas:3, ticket:80},
+      {nome:'Fiona', sub:'Shih Tzu · tutor Patrícia Gomes', fone:'(17) 99356-4407', mail:'patricia.gomes@gmail.com', tag:'Retorno', desde:'Ago 2023', visitas:11, ticket:80},
+      {nome:'Simba', sub:'Gato SRD · tutor Marcelo Tavares', fone:'(17) 99214-9980', mail:'m.tavares@gmail.com', desde:'Out 2024', visitas:5, ticket:140},
+      {nome:'Luna', sub:'Border Collie · tutor Camila Ferraz', fone:'(17) 99887-1203', mail:'camila.ferraz@gmail.com', desde:'Abr 2024', visitas:7, ticket:210},
+      {nome:'Pingo', sub:'SRD · tutor Eduardo Batista', fone:'(17) 99540-7712', mail:'edu.batista@gmail.com', desde:'Dez 2023', visitas:8, ticket:95},
+    ],
+    agenda:[
+      {dia:0,h:1,nome:'Rex',serv:'Consulta clínica',valor:140,pago:true},
+      {dia:0,h:4,nome:'Nina',serv:'Vacina V10',valor:95,pago:false},
+      {dia:1,h:0,nome:'Mel',serv:'Retorno',valor:70,pago:true},
+      {dia:1,h:2,nome:'Amora',serv:'Consulta clínica',valor:140,pago:false},
+      {dia:1,h:6,nome:'Thor',serv:'Exame de imagem',valor:210,pago:false},
+      {dia:2,h:3,nome:'Fiona',serv:'Banho e tosa',valor:80,pago:true},
+      {dia:3,h:1,nome:'Luna',serv:'Castração',valor:480,pago:false},
+      {dia:4,h:5,nome:'Pingo',serv:'Vacina V10',valor:95,pago:true},
+      {dia:5,h:2,nome:'Simba',serv:'Consulta clínica',valor:140,pago:false},
+    ],
+    fin:{
+      '2026-07':[
+        {data:'20/07',desc:'Consulta clínica',cli:'Rex · Mariana Alves',tipo:'in',valor:140},
+        {data:'19/07',desc:'Castração',cli:'Luna · Camila Ferraz',tipo:'in',valor:480},
+        {data:'18/07',desc:'Compra de vacinas',cli:'Fornecedor VetInsumos',tipo:'out',valor:1240},
+        {data:'17/07',desc:'Banho e tosa',cli:'Fiona · Patrícia Gomes',tipo:'in',valor:80},
+        {data:'15/07',desc:'Exame de imagem',cli:'Thor · Fernanda Lima',tipo:'in',valor:210},
+        {data:'12/07',desc:'Conta de energia',cli:'Concessionária',tipo:'out',valor:684},
+        {data:'10/07',desc:'Vacina V10',cli:'Pingo · Eduardo Batista',tipo:'in',valor:95},
+        {data:'05/07',desc:'Salário auxiliar',cli:'Folha de pagamento',tipo:'out',valor:1850},
+      ],
+      '2026-06':[
+        {data:'28/06',desc:'Consulta clínica',cli:'Amora · Juliana Prado',tipo:'in',valor:140},
+        {data:'22/06',desc:'Pacote 4 consultas',cli:'Nina · Roberto Nunes',tipo:'in',valor:504},
+        {data:'18/06',desc:'Aluguel do espaço',cli:'Imobiliária Central',tipo:'out',valor:2200},
+        {data:'11/06',desc:'Banho e tosa',cli:'Mel · Carlos Eduardo',tipo:'in',valor:80},
+        {data:'04/06',desc:'Material de limpeza',cli:'Fornecedor Higimax',tipo:'out',valor:320},
+      ],
+      '2026-05':[
+        {data:'27/05',desc:'Castração',cli:'Bidu · Anderson Ribeiro',tipo:'in',valor:480},
+        {data:'20/05',desc:'Consulta clínica',cli:'Simba · Marcelo Tavares',tipo:'in',valor:140},
+        {data:'14/05',desc:'Conta de energia',cli:'Concessionária',tipo:'out',valor:612},
+        {data:'06/05',desc:'Vacina V10',cli:'Rex · Mariana Alves',tipo:'in',valor:95},
+      ],
+    },
+  },
+  clinica:{
+    nome:'Clínica', icon:'i-steth', clientes:'Pacientes', clienteSing:'paciente',
+    kpi:{fat:52180, ag:12, cli:308, comp:88},
+    delta:{fat:'+8,7%', ag:'+2', cli:'+24', comp:'-1,4 pts'},
+    revenue:[41200,43800,40100,45900,47600,49200,50800,52180],
+    servicos:[
+      {nome:'Consulta',valor:220},
+      {nome:'Retorno',valor:120},
+      {nome:'Sessão de fisioterapia',valor:150},
+      {nome:'Avaliação nutricional',valor:180},
+      {nome:'Sessão de psicologia',valor:200},
+    ],
+    lista:[
+      {nome:'Mariana Alves', sub:'Fisioterapia · convênio Unimed', fone:'(17) 99812-4405', mail:'mariana.alves@gmail.com', tag:'Retorno', desde:'Fev 2024', visitas:12, ticket:150},
+      {nome:'Carlos Eduardo Souza', sub:'Nutrição · particular', fone:'(17) 99640-1187', mail:'cadu.souza@gmail.com', desde:'Jul 2023', visitas:8, ticket:180},
+      {nome:'Fernanda Lima', sub:'Psicologia · particular', fone:'(17) 99521-7788', mail:'fer.lima@outlook.com', tag:'Sessão semanal', desde:'Set 2024', visitas:20, ticket:200},
+      {nome:'Roberto Nunes', sub:'Consulta · convênio Bradesco', fone:'(17) 99433-2910', mail:'roberto.nunes@gmail.com', desde:'Mai 2022', visitas:15, ticket:220},
+      {nome:'Juliana Prado', sub:'Nutrição · particular', fone:'(17) 99188-6521', mail:'ju.prado@gmail.com', desde:'Nov 2024', visitas:5, ticket:180},
+      {nome:'Anderson Ribeiro', sub:'Fisioterapia · convênio Unimed', fone:'(17) 99702-3348', mail:'anderson.r@gmail.com', tag:'Retorno', desde:'Jan 2025', visitas:6, ticket:150},
+      {nome:'Patrícia Gomes', sub:'Psicologia · particular', fone:'(17) 99356-4407', mail:'patricia.gomes@gmail.com', desde:'Ago 2023', visitas:18, ticket:200},
+      {nome:'Marcelo Tavares', sub:'Consulta · particular', fone:'(17) 99214-9980', mail:'m.tavares@gmail.com', desde:'Out 2024', visitas:4, ticket:220},
+      {nome:'Camila Ferraz', sub:'Nutrição · convênio SulAmérica', fone:'(17) 99887-1203', mail:'camila.ferraz@gmail.com', desde:'Abr 2024', visitas:9, ticket:180},
+      {nome:'Eduardo Batista', sub:'Fisioterapia · particular', fone:'(17) 99540-7712', mail:'edu.batista@gmail.com', desde:'Dez 2023', visitas:11, ticket:150},
+    ],
+    agenda:[
+      {dia:0,h:0,nome:'Mariana Alves',serv:'Sessão de fisioterapia',valor:150,pago:true},
+      {dia:0,h:3,nome:'Juliana Prado',serv:'Avaliação nutricional',valor:180,pago:false},
+      {dia:1,h:1,nome:'Fernanda Lima',serv:'Sessão de psicologia',valor:200,pago:true},
+      {dia:1,h:4,nome:'Roberto Nunes',serv:'Consulta',valor:220,pago:false},
+      {dia:2,h:2,nome:'Carlos Eduardo',serv:'Avaliação nutricional',valor:180,pago:true},
+      {dia:2,h:6,nome:'Anderson Ribeiro',serv:'Sessão de fisioterapia',valor:150,pago:false},
+      {dia:3,h:0,nome:'Patrícia Gomes',serv:'Sessão de psicologia',valor:200,pago:true},
+      {dia:4,h:3,nome:'Marcelo Tavares',serv:'Consulta',valor:220,pago:false},
+      {dia:5,h:1,nome:'Camila Ferraz',serv:'Retorno',valor:120,pago:true},
+    ],
+    fin:{
+      '2026-07':[
+        {data:'20/07',desc:'Consulta',cli:'Roberto Nunes',tipo:'in',valor:220},
+        {data:'19/07',desc:'Sessão de psicologia',cli:'Fernanda Lima',tipo:'in',valor:200},
+        {data:'18/07',desc:'Repasse convênio Unimed',cli:'Faturamento convênio',tipo:'in',valor:2840},
+        {data:'16/07',desc:'Aluguel da sala',cli:'Imobiliária Central',tipo:'out',valor:2600},
+        {data:'12/07',desc:'Avaliação nutricional',cli:'Juliana Prado',tipo:'in',valor:180},
+        {data:'08/07',desc:'Software e sistema',cli:'Assinatura mensal',tipo:'out',valor:100},
+        {data:'05/07',desc:'Salário recepção',cli:'Folha de pagamento',tipo:'out',valor:2100},
+      ],
+      '2026-06':[
+        {data:'27/06',desc:'Sessão de fisioterapia',cli:'Mariana Alves',tipo:'in',valor:150},
+        {data:'20/06',desc:'Pacote 8 sessões',cli:'Anderson Ribeiro',tipo:'in',valor:1120},
+        {data:'15/06',desc:'Conta de energia',cli:'Concessionária',tipo:'out',valor:540},
+        {data:'03/06',desc:'Consulta',cli:'Marcelo Tavares',tipo:'in',valor:220},
+      ],
+      '2026-05':[
+        {data:'26/05',desc:'Repasse convênio Bradesco',cli:'Faturamento convênio',tipo:'in',valor:1960},
+        {data:'19/05',desc:'Avaliação nutricional',cli:'Camila Ferraz',tipo:'in',valor:180},
+        {data:'09/05',desc:'Material de escritório',cli:'Fornecedor Papelmix',tipo:'out',valor:280},
+      ],
+    },
+  },
+  academia:{
+    nome:'Academia', icon:'i-dumb', clientes:'Alunos', clienteSing:'aluno',
+    kpi:{fat:29760, ag:16, cli:412, comp:74},
+    delta:{fat:'+15,2%', ag:'+5', cli:'+31', comp:'+4,3 pts'},
+    revenue:[19800,21200,22600,23900,25400,26800,28100,29760],
+    servicos:[
+      {nome:'Aula de avaliação',valor:0},
+      {nome:'Personal (hora)',valor:90},
+      {nome:'Mensalidade plano mensal',valor:129},
+      {nome:'Mensalidade plano trimestral',valor:329},
+      {nome:'Aula experimental',valor:0},
+    ],
+    lista:[
+      {nome:'Mariana Alves', sub:'Plano mensal · musculação', fone:'(17) 99812-4405', mail:'mariana.alves@gmail.com', tag:'Em dia', desde:'Fev 2024', visitas:48, ticket:129},
+      {nome:'Carlos Eduardo Souza', sub:'Plano trimestral · crossfit', fone:'(17) 99640-1187', mail:'cadu.souza@gmail.com', desde:'Jul 2023', visitas:96, ticket:329},
+      {nome:'Fernanda Lima', sub:'Personal · 2x semana', fone:'(17) 99521-7788', mail:'fer.lima@outlook.com', tag:'Personal', desde:'Set 2024', visitas:32, ticket:720},
+      {nome:'Roberto Nunes', sub:'Plano mensal · musculação', fone:'(17) 99433-2910', mail:'roberto.nunes@gmail.com', tag:'Vence em 3 dias', desde:'Mai 2022', visitas:120, ticket:129},
+      {nome:'Juliana Prado', sub:'Plano mensal · funcional', fone:'(17) 99188-6521', mail:'ju.prado@gmail.com', desde:'Nov 2024', visitas:18, ticket:129},
+      {nome:'Anderson Ribeiro', sub:'Plano trimestral · musculação', fone:'(17) 99702-3348', mail:'anderson.r@gmail.com', desde:'Jan 2025', visitas:22, ticket:329},
+      {nome:'Patrícia Gomes', sub:'Personal · 3x semana', fone:'(17) 99356-4407', mail:'patricia.gomes@gmail.com', tag:'Personal', desde:'Ago 2023', visitas:64, ticket:1080},
+      {nome:'Marcelo Tavares', sub:'Plano mensal · musculação', fone:'(17) 99214-9980', mail:'m.tavares@gmail.com', desde:'Out 2024', visitas:14, ticket:129},
+      {nome:'Camila Ferraz', sub:'Plano trimestral · funcional', fone:'(17) 99887-1203', mail:'camila.ferraz@gmail.com', desde:'Abr 2024', visitas:40, ticket:329},
+      {nome:'Eduardo Batista', sub:'Plano mensal · crossfit', fone:'(17) 99540-7712', mail:'edu.batista@gmail.com', tag:'Em dia', desde:'Dez 2023', visitas:52, ticket:129},
+    ],
+    agenda:[
+      {dia:0,h:2,nome:'Fernanda Lima',serv:'Personal (hora)',valor:90,pago:true},
+      {dia:0,h:7,nome:'Mariana Alves',serv:'Aula de avaliação',valor:0,pago:true},
+      {dia:1,h:0,nome:'Roberto Nunes',serv:'Aula experimental',valor:0,pago:false},
+      {dia:1,h:5,nome:'Patrícia Gomes',serv:'Personal (hora)',valor:90,pago:true},
+      {dia:2,h:1,nome:'Juliana Prado',serv:'Aula de avaliação',valor:0,pago:true},
+      {dia:2,h:7,nome:'Eduardo Batista',serv:'Personal (hora)',valor:90,pago:false},
+      {dia:3,h:3,nome:'Camila Ferraz',serv:'Aula de avaliação',valor:0,pago:true},
+      {dia:4,h:2,nome:'Anderson Ribeiro',serv:'Personal (hora)',valor:90,pago:false},
+      {dia:5,h:0,nome:'Marcelo Tavares',serv:'Aula experimental',valor:0,pago:false},
+    ],
+    fin:{
+      '2026-07':[
+        {data:'20/07',desc:'Mensalidade trimestral',cli:'Carlos Eduardo Souza',tipo:'in',valor:329},
+        {data:'19/07',desc:'Personal (8 horas)',cli:'Patrícia Gomes',tipo:'in',valor:720},
+        {data:'18/07',desc:'Mensalidade mensal',cli:'Mariana Alves',tipo:'in',valor:129},
+        {data:'16/07',desc:'Manutenção de equipamentos',cli:'FitService',tipo:'out',valor:940},
+        {data:'12/07',desc:'Mensalidade mensal',cli:'Eduardo Batista',tipo:'in',valor:129},
+        {data:'07/07',desc:'Aluguel do galpão',cli:'Imobiliária Central',tipo:'out',valor:3200},
+        {data:'05/07',desc:'Salário instrutores',cli:'Folha de pagamento',tipo:'out',valor:4200},
+      ],
+      '2026-06':[
+        {data:'28/06',desc:'Mensalidade trimestral',cli:'Anderson Ribeiro',tipo:'in',valor:329},
+        {data:'21/06',desc:'Personal (12 horas)',cli:'Patrícia Gomes',tipo:'in',valor:1080},
+        {data:'14/06',desc:'Conta de energia',cli:'Concessionária',tipo:'out',valor:1420},
+        {data:'02/06',desc:'Mensalidade mensal',cli:'Roberto Nunes',tipo:'in',valor:129},
+      ],
+      '2026-05':[
+        {data:'25/05',desc:'Mensalidade trimestral',cli:'Camila Ferraz',tipo:'in',valor:329},
+        {data:'18/05',desc:'Compra de anilhas',cli:'Fornecedor IronFit',tipo:'out',valor:1680},
+        {data:'08/05',desc:'Mensalidade mensal',cli:'Juliana Prado',tipo:'in',valor:129},
+      ],
+    },
+  },
+};
+
+const MESES = {'2026-07':'Julho 2026','2026-06':'Junho 2026','2026-05':'Maio 2026'};
+
+/* --- estado vivo (mutável): agenda e seleção por segmento --- */
+const state = {
+  segKey:'vet',
+  view:'dashboard',
+  agenda:JSON.parse(JSON.stringify(SEG.vet.agenda)),
+  agView:'semana',
+  agDay:TODAY,
+  selCli:null,
+  busca:'',
+  mes:'2026-07',
+};
+const data = () => SEG[state.segKey];
+
+const content = document.getElementById('content');
+const NAV = [
+  {k:'dashboard', ic:'i-grid', lb:'Dashboard'},
+  {k:'agenda', ic:'i-calendar', lb:'Agenda'},
+  {k:'clientes', ic:'i-users', lb:'Clientes'},
+  {k:'financeiro', ic:'i-wallet', lb:'Financeiro'},
+];
+const TITLES = {
+  dashboard:['Dashboard','Visão geral do mês'],
+  agenda:['Agenda','Semana de 20 a 25 de julho'],
+  clientes:['{C}','Base de cadastros'],
+  financeiro:['Financeiro','Entradas e saídas'],
+};
+
+/* ── navegação ─────────────────────────────────────────────────────────────── */
+function renderNav(){
+  const nav = document.getElementById('nav');
+  const d = data();
+  nav.innerHTML = '<div class="nav__cap">Menu</div>';
+  NAV.forEach(n=>{
+    const lb = n.k==='clientes' ? d.clientes : n.lb;
+    const cnt = n.k==='clientes' ? d.lista.length : n.k==='agenda' ? state.agenda.length : '';
+    const b = el(`<button class="nav__item" ${state.view===n.k?'aria-current="page"':''}>
+      <svg class="ico"><use href="#${n.ic}"/></svg><span class="lbl">${lb}</span>
+      ${cnt!==''?`<span class="nav__count">${cnt}</span>`:''}</button>`);
+    b.onclick = ()=>go(n.k);
+    nav.appendChild(b);
+  });
+}
+function renderSeg(){
+  const seg = document.getElementById('seg');
+  seg.innerHTML='';
+  Object.keys(SEG).forEach(k=>{
+    const s = SEG[k];
+    const b = el(`<button class="seg__btn" aria-pressed="${state.segKey===k}">
+      <svg class="ico"><use href="#${s.icon}"/></svg><span>${s.nome}</span></button>`);
+    b.onclick = ()=>switchSeg(k);
+    seg.appendChild(b);
+  });
+}
+function setTitle(){
+  const [t,c] = TITLES[state.view];
+  document.getElementById('viewTitle').textContent = t.replace('{C}', data().clientes);
+  document.getElementById('viewCrumb').textContent = c;
+}
+
+function go(view){
+  state.view = view;
+  renderNav(); setTitle();
+  renderView();
+}
+function switchSeg(k){
+  if(k===state.segKey) return;
+  state.segKey = k;
+  state.agenda = JSON.parse(JSON.stringify(SEG[k].agenda));
+  state.selCli = null; state.busca=''; state.mes='2026-07'; state.agDay=TODAY;
+  renderSeg(); renderNav(); setTitle();
+  renderView(true); // troca de segmento = recarrega dados (skeleton)
+}
+
+/* ── router de view (skeleton no load, fade rápido no resto) ─────────────────── */
+let loaded = false;
+function renderView(refetch){
+  if(!loaded || refetch){
+    content.innerHTML = '';
+    content.appendChild(skeletonFor(state.view));
+    setTimeout(()=>{ loaded=true; paint(); }, 620);
+  } else {
+    paint();
+  }
+}
+function paint(){
+  content.innerHTML='';
+  const v = document.createElement('div');
+  v.className='view';
+  ({dashboard:viewDashboard, agenda:viewAgenda, clientes:viewClientes, financeiro:viewFinanceiro}[state.view])(v);
+  content.appendChild(v);
+  if(state.view==='dashboard'){ runCountUp(); }
+}
+
+/* ── skeletons ─────────────────────────────────────────────────────────────── */
+function skWrap(inner){const d=document.createElement('div');d.setAttribute('aria-busy','true');d.setAttribute('aria-label','Carregando');d.innerHTML=inner;return d;}
+function skeletonFor(view){
+  if(view==='dashboard'){
+    return skWrap(`
+      <div class="kpis">${'<div class="card kpi"><div class="sk sk-chip"></div><div class="sk sk-line" style="width:60%;margin-top:14px"></div><div class="sk sk-line" style="width:80%;height:20px;margin-top:10px"></div></div>'.repeat(4)}</div>
+      <div class="grid" style="grid-template-columns:1.55fr 1fr;margin-top:14px">
+        <div class="card" style="padding:18px"><div class="sk sk-line" style="width:40%"></div><div class="sk" style="height:180px;margin-top:18px"></div></div>
+        <div class="card" style="padding:18px"><div class="sk sk-line" style="width:50%"></div>${'<div style="display:flex;gap:12px;align-items:center;margin-top:16px"><div class="sk sk-chip"></div><div style="flex:1"><div class="sk sk-line" style="width:70%"></div><div class="sk sk-line" style="width:45%;margin-top:8px"></div></div></div>'.repeat(4)}</div>
+      </div>`);
+  }
+  if(view==='clientes'){
+    return skWrap(`<div class="grid" style="grid-template-columns:1.3fr 1fr"><div class="card"><div style="padding:14px 18px"><div class="sk sk-line" style="width:100%;height:34px"></div></div>${'<div class="row" style="border-top:1px solid var(--line)"><div class="sk sk-chip"></div><div style="flex:1"><div class="sk sk-line" style="width:55%"></div><div class="sk sk-line" style="width:75%;margin-top:8px"></div></div></div>'.repeat(6)}</div><div class="card" style="padding:18px"><div class="sk sk-line" style="width:60%;height:18px"></div><div class="sk" style="height:120px;margin-top:16px"></div></div></div>`);
+  }
+  return skWrap(`<div class="card" style="padding:18px"><div class="sk sk-line" style="width:35%;height:18px"></div>${'<div style="display:flex;gap:12px;align-items:center;margin-top:18px"><div class="sk sk-chip"></div><div style="flex:1"><div class="sk sk-line" style="width:60%"></div><div class="sk sk-line" style="width:40%;margin-top:8px"></div></div><div class="sk sk-line" style="width:80px"></div></div>'.repeat(6)}</div>`);
+}
+
+/* ── DASHBOARD ─────────────────────────────────────────────────────────────── */
+function viewDashboard(root){
+  const d = data();
+  const k = d.kpi, dl = d.delta;
+  const kpiCards = [
+    {ic:'i-wallet', bg:'var(--accent-soft)', fg:'var(--accent-ink)', lb:'Faturamento do mês', v:k.fat, cur:true, delta:dl.fat, up:true},
+    {ic:'i-calendar', bg:'var(--success-soft)', fg:'var(--success-ink)', lb:'Agendamentos hoje', v:k.ag, cur:false, delta:dl.ag, up:true},
+    {ic:'i-users', bg:'#eae7fb', fg:'#5b4bd1', lb:d.clientes+' ativos', v:k.cli, cur:false, delta:dl.cli, up:true},
+    {ic:'i-trend', bg:'var(--amber-soft)', fg:'var(--amber-ink)', lb:'Taxa de comparecimento', v:k.comp, cur:false, pct:true, delta:dl.comp, up:!dl.comp.startsWith('-')},
+  ];
+  const kpis = el('<div class="kpis"></div>');
+  kpiCards.forEach(c=>{
+    kpis.appendChild(el(`<div class="card kpi">
+      <div class="kpi__top">
+        <div class="kpi__ico" style="background:${c.bg};color:${c.fg}"><svg class="ico"><use href="#${c.ic}"/></svg></div>
+        <div class="kpi__label">${c.lb}</div>
+      </div>
+      <div class="kpi__val" data-count="${c.v}" data-cur="${c.cur?1:0}" data-pct="${c.pct?1:0}">0</div>
+      <div class="kpi__delta ${c.up?'up':'down'}"><svg class="ico"><use href="#i-trend"/></svg>${c.delta} vs. mês anterior</div>
+    </div>`));
+  });
+  root.appendChild(kpis);
+
+  const grid = el('<div class="grid" style="grid-template-columns:1.55fr 1fr;margin-top:14px"></div>');
+
+  // chart card (barras)
+  const max = Math.max(...d.revenue);
+  const labs = ['Dez','Jan','Fev','Mar','Abr','Mai','Jun','Jul'];
+  const bars = d.revenue.map((v,i)=>`
+    <div class="bar"><div class="bar__col" style="height:${Math.round(v/max*100)}%;animation-delay:${i*55}ms">
+      <span class="bar__tip">${BRL(v)}</span></div><span class="bar__lab">${labs[i]}</span></div>`).join('');
+  grid.appendChild(el(`<div class="card">
+    <div class="card__head"><div class="card__title"><svg class="ico"><use href="#i-trend"/></svg>Faturamento</div>
+      <div class="card__sub card__act">últimos 8 meses</div></div>
+    <div class="chart"><div class="bars">${bars}</div></div>
+  </div>`));
+
+  // próximos agendamentos
+  const prox = state.agenda.slice().sort((a,b)=> a.dia-b.dia || a.h-b.h).slice(0,5);
+  const rows = prox.map(a=>`
+    <div class="row">
+      <div class="avatar">${ini(a.nome)}</div>
+      <div class="row__main"><div class="row__name">${a.nome}</div>
+        <div class="row__sub">${DIAS[a.dia]} · ${HORAS[a.h]} · ${a.serv}</div></div>
+      <div class="row__meta">${a.pago
+        ? '<span class="badge b-ok"><svg class="ico"><use href="#i-check2"/></svg>pago</span>'
+        : '<span class="badge b-wait"><svg class="ico"><use href="#i-clock"/></svg>a receber</span>'}</div>
+    </div>`).join('');
+  const upcoming = el(`<div class="card">
+    <div class="card__head"><div class="card__title"><svg class="ico"><use href="#i-calendar"/></svg>Próximos agendamentos</div>
+      <button class="btn btn--sm card__act">Ver agenda <svg class="ico"><use href="#i-arrow"/></svg></button></div>
+    <div class="rows" style="margin-top:8px">${rows}</div>
+  </div>`);
+  upcoming.querySelector('.btn').onclick = ()=>go('agenda');
+  grid.appendChild(upcoming);
+
+  root.appendChild(grid);
+  root.appendChild(footNote());
+}
+
+function runCountUp(){
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  content.querySelectorAll('[data-count]').forEach(node=>{
+    const target = +node.dataset.count, cur = node.dataset.cur==='1', pct = node.dataset.pct==='1';
+    const fmt = x => cur ? BRL(x) : pct ? INT(Math.round(x))+'%' : INT(Math.round(x));
+    if(reduce){ node.textContent = fmt(target); return; }
+    const dur = 900, t0 = performance.now();
+    const step = now=>{
+      const p = Math.min(1,(now-t0)/dur);
+      const e = 1-Math.pow(1-p,3); // ease-out cúbico
+      node.textContent = fmt(cur ? target*e : Math.round(target*e));
+      if(p<1) requestAnimationFrame(step);
+      else node.textContent = fmt(target);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ── AGENDA ────────────────────────────────────────────────────────────────── */
+function viewAgenda(root){
+  const d = data();
+  const bar = el(`<div class="card"><div class="toolbar">
+    <div class="tabs" role="group" aria-label="Modo de visualização">
+      <button data-t="semana" aria-pressed="${state.agView==='semana'}">Semana</button>
+      <button data-t="dia" aria-pressed="${state.agView==='dia'}">Dia</button>
+    </div>
+    <div class="card__sub" style="display:flex;align-items:center;gap:8px">
+      <svg class="ico" style="font-size:16px;color:var(--accent-ink)"><use href="#i-calplus"/></svg>
+      Toque num horário vazio para agendar · toque num agendamento para marcar pago
+    </div>
+  </div><div id="agBody"></div></div>`);
+  bar.querySelectorAll('.tabs button').forEach(b=> b.onclick = ()=>{ state.agView=b.dataset.t; paint(); });
+  root.appendChild(bar);
+  const body = bar.querySelector('#agBody');
+  if(state.agView==='semana') agWeek(body); else agDay(body);
+  root.appendChild(footNote());
+}
+
+function agWeek(body){
+  const cal = el('<div class="cal"><div class="cal__grid"></div></div>');
+  const g = cal.firstElementChild;
+  g.appendChild(el('<div class="cal__h" style="border-right:1px solid var(--line)"></div>'));
+  DIAS.forEach((dia,i)=> g.appendChild(el(`<div class="cal__h ${i===TODAY?'cal__h--today':''}">${dia}<span>${DATAS[i]}</span></div>`)));
+  HORAS.forEach((hora,hi)=>{
+    g.appendChild(el(`<div class="cal__t">${hora}</div>`));
+    DIAS.forEach((_,di)=>{
+      const cell = el('<div class="cell"></div>');
+      const here = state.agenda.filter(a=>a.dia===di && a.h===hi);
+      here.forEach(a=> cell.appendChild(apptBlock(a)));
+      if(!here.length) cell.appendChild(el('<div class="cell__add"><svg class="ico"><use href="#i-plus"/></svg></div>'));
+      cell.onclick = (e)=>{ if(e.target.closest('.appt')) return; addAppt(di,hi); };
+      g.appendChild(cell);
+    });
+  });
+  body.appendChild(cal);
+  body.appendChild(legend());
+}
+
+function agDay(body){
+  const list = state.agenda.filter(a=>a.dia===state.agDay).sort((a,b)=>a.h-b.h);
+  const head = el(`<div class="dayhead">
+    <button class="btn btn--sm" data-n="-1"><svg class="ico"><use href="#i-chevL"/></svg></button>
+    <h3>${DIAS[state.agDay]}, ${DATAS[state.agDay]}</h3>
+    <button class="btn btn--sm" data-n="1"><svg class="ico"><use href="#i-chevR"/></svg></button>
+    <button class="btn btn--pri btn--sm" style="margin-left:auto" id="addDay"><svg class="ico"><use href="#i-plus"/></svg>Agendar</button>
+  </div>`);
+  head.querySelector('[data-n="-1"]').onclick=()=>{ state.agDay=(state.agDay+5)%6; paint(); };
+  head.querySelector('[data-n="1"]').onclick=()=>{ state.agDay=(state.agDay+1)%6; paint(); };
+  head.querySelector('#addDay').onclick=()=>{ const slot=firstFree(state.agDay); addAppt(state.agDay, slot); };
+  body.appendChild(head);
+
+  if(!list.length){
+    body.appendChild(emptyState('i-calplus','Nenhum agendamento neste dia','Toque em "Agendar" para reservar um horário ou volte para a visão de semana.'));
+    return;
+  }
+  const rows = el('<div class="rows"></div>');
+  list.forEach(a=>{
+    const r = el(`<button class="row row--btn">
+      <div class="avatar" style="background:${a.pago?'var(--success-soft)':'var(--accent-soft)'};color:${a.pago?'var(--success-ink)':'var(--accent-ink)'}"><svg class="ico"><use href="#i-clock"/></svg></div>
+      <div class="row__main"><div class="row__name">${HORAS[a.h]} · ${a.nome}</div><div class="row__sub">${a.serv}</div></div>
+      <div class="row__meta"><span class="row__val">${a.valor?BRL(a.valor):'cortesia'}</span>
+        ${a.pago?'<span class="badge b-ok"><svg class="ico"><use href="#i-check2"/></svg>pago</span>':'<span class="badge b-wait"><svg class="ico"><use href="#i-clock"/></svg>a receber</span>'}</div>
+    </button>`);
+    r.onclick = ()=>{ a.pago=!a.pago; paint(); };
+    rows.appendChild(r);
+  });
+  body.appendChild(rows);
+}
+
+function apptBlock(a){
+  const b = el(`<button class="appt ${a.pago?'paid':''}">
+    <div class="appt__t">${HORAS[a.h]}</div>
+    <div class="appt__n">${a.nome}</div>
+    <div class="appt__s">${a.serv}</div>
+    <div class="appt__pay"><svg class="ico"><use href="#${a.pago?'i-check2':'i-clock'}"/></svg>${a.pago?'pago':'a receber'}</div>
+  </button>`);
+  b.onclick = (e)=>{ e.stopPropagation(); a.pago=!a.pago; paint(); };
+  return b;
+}
+function firstFree(dia){
+  for(let h=0;h<HORAS.length;h++) if(!state.agenda.some(a=>a.dia===dia&&a.h===h)) return h;
+  return 0;
+}
+let addIdx = 0;
+function addAppt(dia,h){
+  if(state.agenda.some(a=>a.dia===dia&&a.h===h)) return;
+  const d = data();
+  const cli = d.lista[addIdx % d.lista.length];
+  const serv = d.servicos[addIdx % d.servicos.length];
+  addIdx++;
+  state.agenda.push({dia,h,nome:cli.nome.split(' ')[0]+(d===SEG.vet?'':' '+ (cli.nome.split(' ')[1]||'')),serv:serv.nome,valor:serv.valor,pago:false});
+  renderNav();
+  paint();
+}
+function legend(){
+  return el(`<div class="cal__legend">
+    <span class="dotlg"><i style="background:var(--accent-soft)"></i>a receber</span>
+    <span class="dotlg"><i style="background:var(--success-soft)"></i>pago</span>
+    <span class="dotlg"><i style="border:1px dashed #b9c6dd;background:transparent"></i>horário livre</span>
+  </div>`);
+}
+
+/* ── CLIENTES ──────────────────────────────────────────────────────────────── */
+function viewClientes(root){
+  const grid = el('<div class="grid" style="grid-template-columns:1.3fr 1fr;align-items:start"></div>');
+  // lista + busca
+  const listCard = el(`<div class="card">
+    <div class="toolbar">
+      <label class="field"><svg class="ico"><use href="#i-search"/></svg>
+        <input id="busca" type="search" placeholder="Buscar por nome, telefone ou detalhe" value="${state.busca}" autocomplete="off"></label>
+      <button class="btn btn--pri btn--sm"><svg class="ico"><use href="#i-plus"/></svg>Novo</button>
+    </div>
+    <div id="cliRows" class="rows"></div>
+  </div>`);
+  const input = listCard.querySelector('#busca');
+  input.addEventListener('input', ()=>{ state.busca = input.value; fillCliRows(listCard.querySelector('#cliRows')); });
+  grid.appendChild(listCard);
+  fillCliRows(listCard.querySelector('#cliRows'));
+
+  // detalhe
+  const det = el('<div class="card" id="cliDetail"></div>');
+  grid.appendChild(det);
+  fillDetail(det);
+
+  root.appendChild(grid);
+  root.appendChild(footNote());
+}
+function filtered(){
+  const q = state.busca.trim().toLowerCase();
+  const lst = data().lista;
+  if(!q) return lst;
+  return lst.filter(c=> (c.nome+' '+c.sub+' '+c.fone).toLowerCase().includes(q));
+}
+function fillCliRows(box){
+  const res = filtered();
+  box.innerHTML='';
+  if(!res.length){
+    box.appendChild(emptyState('i-search','Nenhum '+data().clienteSing+' encontrado','Tente outro nome ou telefone. A busca filtra enquanto você digita.'));
+    return;
+  }
+  res.forEach(c=>{
+    const active = state.selCli===c.nome;
+    const r = el(`<button class="row row--btn ${active?'is-active':''}">
+      <div class="avatar">${ini(c.nome)}</div>
+      <div class="row__main"><div class="row__name">${c.nome}</div><div class="row__sub">${c.sub}</div></div>
+      <div class="row__meta">${c.tag?`<span class="badge b-info">${c.tag}</span>`:''}
+        <svg class="ico" style="font-size:16px;color:var(--muted)"><use href="#i-chevR"/></svg></div>
+    </button>`);
+    r.onclick = ()=>{ state.selCli = active?null:c.nome; fillCliRows(box); fillDetail(document.getElementById('cliDetail')); };
+    box.appendChild(r);
+  });
+}
+function fillDetail(box){
+  const c = data().lista.find(x=>x.nome===state.selCli);
+  if(!c){
+    box.innerHTML='';
+    box.appendChild(el(`<div class="detail__empty"><svg class="ico"><use href="#i-users"/></svg>
+      <p>Selecione um ${data().clienteSing} para ver o histórico</p></div>`));
+    return;
+  }
+  box.innerHTML='';
+  box.appendChild(el(`<div>
+    <div class="detail__head">
+      <div class="detail__av">${ini(c.nome)}</div>
+      <div><div class="detail__name">${c.nome}</div><div class="detail__sub">${c.sub}</div></div>
+    </div>
+    <div class="detail__stats">
+      <div class="detail__stat"><b>${c.visitas}</b><span>atendimentos</span></div>
+      <div class="detail__stat"><b>${BRL(c.ticket)}</b><span>ticket médio</span></div>
+    </div>
+    <div class="detail__list">
+      <div class="dl"><svg class="ico"><use href="#i-phone"/></svg>Telefone<b>${c.fone}</b></div>
+      <div class="dl"><svg class="ico"><use href="#i-mail"/></svg>E-mail<b>${c.mail}</b></div>
+      <div class="dl"><svg class="ico"><use href="#i-clock"/></svg>Cliente desde<b>${c.desde}</b></div>
+      <div class="dl"><svg class="ico"><use href="#i-tag"/></svg>Situação<b>${c.tag||'Ativo'}</b></div>
+    </div>
+    <div style="padding:0 18px 18px;display:flex;gap:8px">
+      <button class="btn btn--pri btn--sm" style="flex:1"><svg class="ico"><use href="#i-calplus"/></svg>Agendar</button>
+      <button class="btn btn--sm" style="flex:1"><svg class="ico"><use href="#i-arrow"/></svg>Abrir ficha</button>
+    </div>
+  </div>`));
+  box.querySelector('.btn--pri').onclick = ()=>go('agenda');
+}
+
+/* ── FINANCEIRO ────────────────────────────────────────────────────────────── */
+function viewFinanceiro(root){
+  const opts = Object.keys(MESES).map(m=>`<option value="${m}" ${state.mes===m?'selected':''}>${MESES[m]}</option>`).join('');
+  const wrap = el(`<div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)" id="finSum"></div>
+    <div class="card" style="margin-top:14px">
+      <div class="toolbar">
+        <div class="card__title"><svg class="ico"><use href="#i-wallet"/></svg>Transações</div>
+        <select class="sel card__act" id="mes" aria-label="Filtrar por mês">${opts}</select>
+      </div>
+      <div id="finRows"></div>
+    </div>
+  </div>`);
+  wrap.querySelector('#mes').addEventListener('change', e=>{ state.mes=e.target.value; fillFin(wrap); });
+  root.appendChild(wrap);
+  fillFin(wrap);
+  root.appendChild(footNote());
+}
+function fillFin(wrap){
+  const list = (data().fin[state.mes]||[]).slice();
+  const entradas = list.filter(t=>t.tipo==='in').reduce((s,t)=>s+t.valor,0);
+  const saidas = list.filter(t=>t.tipo==='out').reduce((s,t)=>s+t.valor,0);
+  const saldo = entradas - saidas;
+
+  const sum = wrap.querySelector('#finSum');
+  sum.innerHTML='';
+  [
+    {lb:'Entradas', v:entradas, cls:'amt-in', bg:'var(--success-soft)', fg:'var(--success-ink)', ic:'i-trend'},
+    {lb:'Saídas', v:saidas, cls:'amt-out', bg:'var(--danger-soft)', fg:'var(--danger-ink)', ic:'i-wallet'},
+    {lb:'Saldo do mês', v:saldo, cls:saldo>=0?'amt-in':'amt-out', bg:'var(--accent-soft)', fg:'var(--accent-ink)', ic:'i-check'},
+  ].forEach(s=> sum.appendChild(el(`<div class="card kpi">
+    <div class="kpi__top"><div class="kpi__ico" style="background:${s.bg};color:${s.fg}"><svg class="ico"><use href="#${s.ic}"/></svg></div>
+      <div class="kpi__label">${s.lb}</div></div>
+    <div class="kpi__val ${s.cls}" style="font-size:23px">${BRL(s.v)}</div>
+  </div>`)));
+
+  const box = wrap.querySelector('#finRows');
+  box.innerHTML='';
+  if(!list.length){
+    box.appendChild(emptyState('i-inbox','Nenhuma transação em '+MESES[state.mes],'Escolha outro mês no filtro acima para ver o movimento.'));
+    return;
+  }
+  const rows = el('<div class="rows"></div>');
+  rows.appendChild(el(`<div class="ft__row ft__head"><span>Data</span><span>Descrição</span><span style="text-align:right">Tipo</span><span style="text-align:right">Valor</span><span style="text-align:right">Saldo</span></div>`));
+  let run = 0;
+  list.slice().reverse().forEach(t=>{ run += (t.tipo==='in'?t.valor:-t.valor); t._run = run; });
+  list.forEach(t=>{
+    rows.appendChild(el(`<div class="ft__row">
+      <span class="ft__date">${t.data}</span>
+      <span class="ft__desc"><b>${t.desc}</b><span>${t.cli}</span></span>
+      <span style="text-align:right">${t.tipo==='in'?'<span class="badge b-ok">entrada</span>':'<span class="badge b-mut">saída</span>'}</span>
+      <span class="ft__amt ${t.tipo==='in'?'amt-in':'amt-out'}">${t.tipo==='in'?'+':'-'} ${BRL(t.valor)}</span>
+      <span class="ft__bal">${BRL(t._run)}</span>
+    </div>`));
+  });
+  box.appendChild(rows);
+}
+
+/* ── util UI ───────────────────────────────────────────────────────────────── */
+function emptyState(ic,titulo,texto){
+  return el(`<div class="empty"><div class="empty__ico"><svg class="ico"><use href="#${ic}"/></svg></div>
+    <h4>${titulo}</h4><p>${texto}</p></div>`);
+}
+function footNote(){
+  return el('<p class="foot-note">Demonstração navegável · dados fictícios · nenhuma informação real de cliente</p>');
+}
+
+/* ── boot ──────────────────────────────────────────────────────────────────── */
+renderSeg(); renderNav(); setTitle(); renderView();
+</script>
+</body>
+</html>
