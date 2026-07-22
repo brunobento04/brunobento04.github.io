@@ -834,15 +834,32 @@ a { color: inherit; }
   .carta > *,
   html.js .carta > * { height: auto; }
 
-  /* a janela: esconde o iframe (armadilha de scroll aninhado + minusculo)
-     e mostra o preview com botao grande "Abrir demo" (tela cheia) */
-  .janela__page,
+  /* a janela mostra a demo AO VIVO no celular (o layout mobile da propria demo),
+     mas TRAVADA (pointer-events:none) pra o scroll da pagina passar; o botao
+     "Abrir demo" (barra sobreposta) abre em tela cheia pra interagir. */
+  .janela__viewport { flex: none; height: min(60vh, 460px); }
+  .janela__page { display: block; pointer-events: none; }
   .janela__loading { display: none; }
-  .janela__viewport { flex: none; }
-  .janela__preview { display: flex; }
+  .janela__preview {
+    display: flex; flex-direction: row; align-items: center; justify-content: center;
+    position: absolute; left: 0; right: 0; bottom: 0; min-height: 0; gap: .5rem;
+    padding: .7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(8,10,13,.8), rgba(8,10,13,0));
+    z-index: 4; pointer-events: none;
+  }
+  .janela__glyph, .janela__ptxt { display: none; }
+  .janela__cta { pointer-events: auto; }
 
   /* alvo de toque maior no botao de abrir-em-nova-aba da barra de titulo */
   .janela__ext { width: 44px; height: 44px; }
+
+  /* EFEITO DE CARD no celular: cada card sobe e aparece ao entrar na tela.
+     So liga com JS (classe html.mrev); sem JS os cards ficam visiveis. */
+  html.mrev .carta {
+    opacity: 0; transform: translateY(26px) scale(.985);
+    transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+  }
+  html.mrev .carta.in-view { opacity: 1; transform: none; }
 }
 
 

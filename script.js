@@ -220,3 +220,41 @@
   window.addEventListener('resize', apply);
   apply();
 })();
+
+
+/* ============================================================================
+   Efeito de card no CELULAR (<= 768px): revela cada card ao entrar na viewport.
+   No desktop quem manda e o deck (scrub) acima; aqui e so o modo coluna mobile.
+   Sem IntersectionObserver ou com reduced-motion: cards ficam visiveis (sem
+   classe .mrev, o CSS nem esconde). Seguro por construcao.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  var deck = document.getElementById('baralho');
+  if (!deck) return;
+  var cartas = Array.prototype.slice.call(deck.querySelectorAll('.carta'));
+  if (!cartas.length) return;
+  var MOBILE = 768, io = null;
+  function ok(){ return ('IntersectionObserver' in window) && !reduce; }
+  function reveal(el){ el.classList.add('in-view'); }
+  function on(){
+    if (!ok()) { cartas.forEach(reveal); return; }
+    root.classList.add('mrev');
+    if (!io) {
+      io = new IntersectionObserver(function (ents){
+        ents.forEach(function (e){ if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    }
+    cartas.forEach(function (c){ if (!c.classList.contains('in-view')) io.observe(c); });
+  }
+  function off(){
+    root.classList.remove('mrev');
+    if (io) cartas.forEach(function (c){ io.unobserve(c); });
+    cartas.forEach(function (c){ c.classList.remove('in-view'); });
+  }
+  function apply(){ if (window.innerWidth <= MOBILE) on(); else off(); }
+  window.addEventListener('resize', apply);
+  apply();
+})();
