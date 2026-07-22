@@ -717,3 +717,209 @@ a { color: inherit; }
 @media (max-width: 640px) {
   .janela { border-radius: 14px; }
 }
+
+
+/* ── 11. Preview da janela (mobile) ───────────────────────────────────────────
+   No desktop (aprovado) a demo roda ao vivo no <iframe>. No celular um iframe
+   de pagina desktop vira armadilha: scroll aninhado e conteudo minusculo. Entao
+   no mobile a janela troca pra um preview limpo com botao grande que abre a demo
+   em TELA CHEIA (nova aba). Estado base = escondido; a media query mobile mostra.
+   Anima so transform/opacity; reduced-motion coberto. */
+
+.janela__preview {
+  display: none;                 /* desktop: some; mobile: flex (secao 12) */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  min-height: 300px;
+  padding: clamp(2rem, 8vw, 3rem) 1.5rem;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 143, 69, .06), transparent 60%),
+    var(--surface-machine);
+}
+
+.janela__glyph {
+  width: 60px; height: 60px;
+  display: grid; place-items: center;
+  border-radius: 16px;
+  color: var(--ink);
+  background: var(--surface-human);
+  border: 1px solid var(--rule);
+}
+.janela__glyph svg { width: 28px; height: 28px; }
+
+.janela__ptxt {
+  max-width: 22ch;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-sm);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.janela__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 52px;              /* alvo de toque folgado (>= 44px) */
+  padding: 0 1.6rem;
+  border-radius: var(--r-pill);
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  font-family: var(--font-sans);
+  font-size: 1rem;              /* 16px: sem surpresa de zoom */
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.janela__cta svg { width: 18px; height: 18px; color: var(--accent); }
+.janela__cta:active { transform: scale(.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .janela__cta { transition: none; }
+  .janela__cta:active { transform: none; }
+}
+
+
+/* ── 12. Mobile (<= 768px): o baralho vira coluna, a janela vira preview ───────
+   SO mobile. O desktop (>= 769px) foi aprovado e nao e tocado por nada abaixo.
+   Mobile-first (as 4 skills): 100dvh no lugar de h-screen (o palco ja usa dvh),
+   1 coluna, alvos >= 44px, inputs 16px, grid em vez de flex-math, zero
+   overflow horizontal, safe-area. O scroll-scrub e desligado aqui e no JS. */
+
+@media (max-width: 768px) {
+  /* nada de scroll horizontal preso: a pagina rola vertical, natural */
+  body { overflow-x: hidden; }
+
+  /* desliga o modo scroll-scrub e volta pra coluna empilhada.
+     Repete os seletores html.js pra bater a especificidade do bloco de cima. */
+  html.js .rolo { position: static; height: auto; }
+
+  html.js .palco {
+    position: static;
+    height: auto;
+    display: block;
+    overflow: visible;
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: clamp(1rem, 5vw, 1.75rem);
+    gap: 0;
+  }
+
+  html.js .baralho {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+  }
+
+  html.js .carta {
+    position: static;
+    inset: auto;
+    transform: none;
+    filter: none;
+    will-change: auto;
+    margin-bottom: clamp(1.25rem, 5vw, 1.75rem);
+  }
+  html.js .carta:last-child { margin-bottom: 0; }
+
+  /* altura livre: o hero cresce com o conteudo; a janela idem */
+  .carta > *,
+  html.js .carta > * { height: auto; }
+
+  /* a janela: esconde o iframe (armadilha de scroll aninhado + minusculo)
+     e mostra o preview com botao grande "Abrir demo" (tela cheia) */
+  .janela__page,
+  .janela__loading { display: none; }
+  .janela__viewport { flex: none; }
+  .janela__preview { display: flex; }
+
+  /* alvo de toque maior no botao de abrir-em-nova-aba da barra de titulo */
+  .janela__ext { width: 44px; height: 44px; }
+}
+
+
+/* ── 13. Snap do deck + pontos + DARK travado ─────────────────────────────────
+   (a) transicao firme e curta do deck (so transform/opacity, ease-out do banner)
+   (b) pontos de posicao (affordance da navegacao snap), criados via JS no desktop
+   (c) portfolio SEMPRE em dark, independente do tema do device (igual ao print).
+   As demos nos <iframe> mantem o visual proprio delas (documento separado). */
+
+/* (c) DARK sempre: a ultima declaracao de cada token no :root vence a cascata,
+   entao os valores escuros valem tanto no modo claro quanto no escuro do SO. */
+:root {
+  color-scheme: dark;
+
+  --surface-human:   #171c22;
+  --surface-machine: #0e1217;
+  --seam:            #29313b;
+  --rule:            #20262f;
+
+  --ink-strong: #f1f5f8;
+  --ink:        #d5dde5;
+  --ink-muted:  #93a0ac;
+
+  --cta-bg: #e9eef2;
+  --cta-fg: #141a1f;
+  --accent: #a8490a;
+  --focus:  #ff8f45;
+
+  --sheen: radial-gradient(95% 95% at 14% 0%,
+             rgba(199, 215, 231, .07)  0%,
+             rgba(199, 215, 231, .028) 55%,
+             rgba(199, 215, 231, 0)    100%);
+
+  --recess-1: rgba(0, 0, 0, .30);
+  --recess-2: rgba(0, 0, 0, 0);
+
+  /* duracao da troca de card no deck (JS usa 420ms igual) */
+  --t-deck: 420ms;
+}
+
+/* (a) snap: a troca entre cards e uma transicao curta e firme, so no desktop.
+   O JS escreve transform/opacity por indice; o CSS faz o tween. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 769px) {
+  html.js .carta {
+    transition: transform var(--t-deck) var(--ease-out),
+                opacity   var(--t-deck) var(--ease-out);
+  }
+}
+
+/* (b) pontos: indicador de posicao do deck (JS injeta no desktop) */
+.deck-dots {
+  position: fixed;
+  right: clamp(10px, 1.6vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.deck-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  background: var(--rule);
+  opacity: .5;
+  transition: transform var(--t-fast) var(--ease-out),
+              opacity var(--t-fast) ease,
+              background var(--t-fast) ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .deck-dots button:hover { opacity: 1; }
+}
+.deck-dots button[aria-current="true"] {
+  background: var(--ink-muted);
+  opacity: 1;
+  transform: scale(1.35);
+}
+.deck-dots button:active { transform: scale(1.1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-dots button { transition: none; }
+}

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Bruno Bento · Software Engineer Fullstack</title>
 <meta name="description" content="Sistemas internos integrados ao ERP TOTVS Protheus e projetos que facilitam a vida das pessoas, do banco ao deploy. São José do Rio Preto, SP, Brasil.">
@@ -16,8 +16,9 @@
 <meta property="og:url" content="https://brunobento04.github.io/">
 <meta name="twitter:card" content="summary">
 
-<meta name="theme-color" content="#fbfcfd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#171c22" media="(prefers-color-scheme: dark)">
+<!-- portfolio travado em dark: uma unica cor de barra, sempre escura -->
+<meta name="theme-color" content="#171c22">
+<meta name="color-scheme" content="dark">
 
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
@@ -122,6 +123,52 @@
             <div class="janela__viewport">
               <p class="janela__loading" aria-hidden="true">carregando voltera</p>
               <iframe class="janela__page" src="demos/eletrica/index.html" title="Voltera, landing de serviço (demonstração)" loading="lazy"></iframe>
+              <!-- mobile: preview + botao grande que abre a demo em tela cheia -->
+              <div class="janela__preview">
+                <span class="janela__glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7v8l9-12h-7z"/></svg>
+                </span>
+                <p class="janela__ptxt">Landing navegável da Voltera. Abre em tela cheia.</p>
+                <a class="janela__cta" href="demos/eletrica/index.html" target="_blank" rel="noopener">
+                  Abrir demo
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h4v4"/><path d="M13 3 7.5 8.5"/><path d="M11 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/></svg>
+                </a>
+              </div>
+            </div>
+          </figure>
+        </div>
+
+        <!-- ===========================================================
+             CARTA 3 . caso 4Evolut (demo de sistema jogável)
+             Mesmo padrao da janela: nome+setor, abrir-em-nova-aba, iframe.
+             O botao abre a demo LOCAL, sem link para o site real.
+             =========================================================== -->
+        <div class="carta">
+          <figure class="janela">
+            <figcaption class="janela__bar">
+              <span class="janela__label">
+                <span class="janela__name">4Evolut</span>
+                <span class="janela__sep" aria-hidden="true">·</span>
+                <span class="janela__setor">sistema de gestão</span>
+              </span>
+              <a class="janela__ext" href="demos/gestao/index.html" target="_blank" rel="noopener" aria-label="Abrir a demo do painel de gestão em uma aba nova">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h4v4"/><path d="M13 3 7.5 8.5"/><path d="M11 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/></svg>
+              </a>
+            </figcaption>
+            <div class="janela__viewport">
+              <p class="janela__loading" aria-hidden="true">carregando 4evolut</p>
+              <iframe class="janela__page" src="demos/gestao/index.html" title="4Evolut, painel de gestão (demonstração)" loading="lazy"></iframe>
+              <!-- mobile: preview + botao grande que abre a demo em tela cheia -->
+              <div class="janela__preview">
+                <span class="janela__glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>
+                </span>
+                <p class="janela__ptxt">Painel de gestão jogável. Abre em tela cheia.</p>
+                <a class="janela__cta" href="demos/gestao/index.html" target="_blank" rel="noopener">
+                  Abrir demo
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h4v4"/><path d="M13 3 7.5 8.5"/><path d="M11 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/></svg>
+                </a>
+              </div>
             </div>
           </figure>
         </div>
