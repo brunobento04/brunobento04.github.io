@@ -336,7 +336,7 @@ a { color: inherit; }
   left: calc(var(--arc-w) / -2);
   width: var(--arc-w);
   height: var(--arc-h);
-  opacity: 0;                /* estado base = depois da solda: o arco sumiu */
+  opacity: 0;                /* estado base = apagado: sem animacao/reduced-motion nao mostra faisca */
   background: radial-gradient(ellipse closest-side,
     var(--arc-core) 0%,
     var(--arc-mid) 16%,
@@ -461,7 +461,9 @@ a { color: inherit; }
 
 
 /* ── 8. Movimento ─────────────────────────────────────────────────────────────
-   Uma ousadia so: a solda. Uma vez, ~1,5s, e congela. Sem loop.
+   Uma ousadia so: a solda. A faisca desce e sobe a costura em loop (~4,5s
+   ida-e-volta) — igual ao banner (decisao 2026-07-22). So a faisca faz loop;
+   os reveals de texto e o desenho da costura entram uma vez e congelam.
    Os tempos abaixo sao os do banner convertidos de keyTimes para ms, para o
    site e o banner abrirem no mesmo compasso.
    Regra do estado base: tudo ja esta no estado FINAL no CSS. As animacoes so
@@ -500,33 +502,37 @@ a { color: inherit; }
 /* O arco viaja junto com a ponta da costura. Duas animacoes, porque o trajeto
    e o brilho tem tempos diferentes no banner, e cada uma toca uma propriedade
    diferente (transform / opacity), entao nao brigam. */
+/* O arco acende uma vez e FICA; depois desce e SOBE a costura, pra sempre.
+   Duas animacoes, propriedades diferentes (opacity / posicao), nao brigam:
+   `weld-ignite` congela em opacity:1 -> o arco fica visivel durante o vai-e-vem;
+   `weld-shuttle-*` viaja de 8% a 92% do vao da costura (nunca some nas pontas; a
+   .torch clipa o resto) e volta, com ease-in-out pra reverter suave em cada ponta. */
 .arc {
   animation:
-    weld-travel-x 1190ms linear 150ms both,
-    weld-glow     1500ms linear    0ms both;
+    weld-ignite    600ms  linear      150ms both,
+    weld-shuttle-x 4500ms ease-in-out 150ms infinite;
 }
 
-@keyframes weld-travel-x {
-  from { transform: translate3d(-60px, 0, 0); }
-  to   { transform: translate3d(calc(100vw + 60px), 0, 0); }
+@keyframes weld-ignite {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-@keyframes weld-travel-y {
-  from { transform: translate3d(0, -60px, 0); }
-  to   { transform: translate3d(0, calc(var(--carta-h) + 60px), 0); }
+/* mobile: a costura e horizontal (topo do painel) -> vai-e-vem no eixo X */
+@keyframes weld-shuttle-x {
+  0%, 100% { left: calc(8%  - var(--arc-w) / 2); }
+  50%      { left: calc(92% - var(--arc-w) / 2); }
 }
 
-@keyframes weld-glow {
-  0%   { opacity: 0; }
-  14%  { opacity: 0; }
-  26%  { opacity: 1; }
-  78%  { opacity: 1; }
-  100% { opacity: 0; }
+/* desktop: a costura e vertical -> vai-e-vem no eixo Y (desce e sobe) */
+@keyframes weld-shuttle-y {
+  0%, 100% { top: calc(8%  - var(--arc-h) / 2); }
+  50%      { top: calc(92% - var(--arc-h) / 2); }
 }
 
 @media (min-width: 900px) {
   .seam { animation-name: seam-draw-y; }
-  .arc  { animation-name: weld-travel-y, weld-glow; }
+  .arc  { animation-name: weld-ignite, weld-shuttle-y; }
 }
 
 /* Enquanto a fonte nao chegou, a peca fica parada no primeiro quadro.
